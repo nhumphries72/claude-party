@@ -1,0 +1,268 @@
+import json
+import asyncio
+import random
+import time
+from navigator import Navigator
+
+with open("map_nodes.json", 'r') as node_map: NODE_MAP = json.load(node_map).get("nodes")
+with open("task_info.json", 'r') as task_info: TASK_INFO = json.load(task_info)
+nav = Navigator()
+
+def interrupt_bot(bot_ids, context):
+    active_actions = context.get('active_actions')
+    active_connection = context.get('active_connection')
+    
+    if not isinstance(bot_ids, list): bot_ids = [bot_ids]
+    
+    for bot in bot_ids:
+        if bot in active_actions:
+            active_actions[bot].cancel()
+            del active_actions[bot]
+            
+            if active_connection:
+                stop_payload = {"type": "command", "action": "stop", "bot_id": bot}
+                asyncio.create_task(active_connection.send(json.dumps(stop_payload)))
+
+async def execute_command(cmd, parts, context):
+    cmd_dict = {
+        "move": move,
+        "task": prepare_task,
+        "refresh": refresh,
+        "meeting": call_meeting,
+        "kill": kill_target,
+        "roles": print_roles,
+        "report": report_body
+    }
+    function = cmd_dict.get(cmd)
+    
+    if function:
+        await function(parts, context)
+    else:
+        print("Unknown command")
+
+async def move(parts, context):
+    active_connection = context.get('active_connection')
+    active_actions = context.get('active_actions')
+    if active_connection:
+        try:
+            bot_id = int(parts[0])
+            destination = str(parts[1])
+            
+            if destination not in NODE_MAP:
+                print(f"Node: '{destination}' not found")
+                return
+                
+            interrupt_bot(bot_id, context)
+            active_actions[bot_id] = asyncio.create_task(run_move_sequence(bot_id, destination, context))
+        
+        except ValueError:
+            print("Bot ID must be an integer")
+    
+    else:
+        print("Cannot send command; Unity is not connected")
+        
+async def run_move_sequence(bot_id, destination, context):
+    traverse_path = context.get('traverse_path')
+    active_actions = context.get('active_actions')
+    
+    try:
+        await traverse_path(bot_id, destination)
+    except asyncio.CancelledError:
+        print(f"Bot {bot_id}'s movement was interrupted")
+        raise 
+    finally:
+        if bot_id in active_actions: del active_actions[bot_id]
+        
+async def prepare_task(parts, context):
+    MASTER_TASKS = context.get('MASTER_TASKS')
+    active_actions = context.get('active_actions')
+    
+    try:
+        bot_id = int(parts[0])
+        task_index = int(parts[1])
+        
+        if str(bot_id) not in MASTER_TASKS:
+            print(f"No task list for bot {bot_id}")
+            return
+        
+        bot_itinerary = MASTER_TASKS[str(bot_id)]
+        
+        if task_index < 1 or task_index >= len(bot_itinerary)+1:
+            print(f"Invalid index. Bot {bot_id} has {len(bot_itinerary)} tasks assigned.")
+            return
+            
+        task_obj = bot_itinerary[task_index-1]
+        task_name = task_obj.get('task')
+        
+        if len(task_obj['locations']) == 0:
+            print(f"Bot {bot_id} has already completed {task_name}")
+            return
+        
+        location = task_obj.get('locations')[0]
+        
+        if 'cooldown_until' in task_obj and task_obj['cooldown_until'] > time.time():
+            remaining = int(task_obj['cooldown_until'] - time.time())
+            print(f"Bot {bot_id}'s sample is not ready yet. Will be ready in {remaining} seconds.")
+            return
+        
+        if not location:
+            print(f"No target node found for {task_name}")
+            return
+        
+        interrupt_bot(bot_id, context)
+        
+        active_actions[bot_id] = asyncio.create_task(run_task_sequence(bot_id, task_index, task_obj, location, context))
+    
+    except ValueError as e:
+        print(f"ValueError: {e}")
+        
+
+async def run_task_sequence(bot_id, task_index, task_obj, location, context):
+    active_connection = context.get('active_connection')
+    MASTER_TASKS = context.get('MASTER_TASKS')
+    traverse_path = context.get('traverse_path')
+    active_actions = context.get('active_actions')
+    task_name = task_obj.get('task')
+    
+    try:
+        print(f"Bot {bot_id} heading to {location} to complete task {task_name}")
+        await traverse_path(bot_id, location)
+        
+        print(f"Bot {bot_id} beginning task {task_name}")
+        duration = random.uniform(task_obj['duration'][0], task_obj['duration'][1])
+        
+        await asyncio.sleep(duration)
+        
+        MASTER_TASKS[str(bot_id)][task_index-1]['locations'].pop(0)
+        
+        if len(MASTER_TASKS[str(bot_id)][task_index-1]['locations']) == 0:
+            payload = {
+                "type": "command",
+                "action": "complete_task",
+                "bot_id": bot_id,
+                "task_name": task_name
+            }
+            await active_connection.send(json.dumps(payload))
+            print(f"Bot {bot_id} fully completed {task_name}")
+        elif task_obj.get('async'):
+            task_obj['cooldown_until'] = time.time() + 60
+            print(f"Bot {bot_id}'s sample will be ready in one minute")
+        else:
+            print(f"Bot {bot_id} progressed task {task_name}")
+            
+        with open("task_dump.json", "w") as f:
+            json.dump(MASTER_TASKS, f, indent=4)
+    
+    except asyncio.CancelledError:
+        print(f"Bot {bot_id}'s task {task_name} was interrupted")
+        raise
+    
+    finally:
+        if bot_id in active_actions: del active_actions[bot_id]
+        
+async def refresh(parts, context):
+    global NODE_MAP, TASK_INFO, MASTER_TASKS
+    try:
+        with open("map_nodes.json", 'r') as node_map: NODE_MAP = json.load(node_map).get("nodes")
+        with open("task_info.json", 'r') as info: TASK_INFO = json.load(info)
+        with open("task_dump.json", 'r') as dump: MASTER_TASKS = json.load(dump)
+    except Exception as e:
+        print(f"Failed to reload: {e}")
+                
+async def call_meeting(parts, context):
+    bot_id = int(parts[0])
+    active_actions = context.get('active_actions')
+    active_connection = context.get('active_connection')
+    traverse_path = context.get('traverse_path')
+    
+    print(f"Bot {bot_id} preparing to call an emergency meeting")
+    
+    try:
+        nav_task = asyncio.create_task(traverse_path(bot_id, "emergency_table_south"))
+        active_actions[bot_id] = nav_task
+        await nav_task
+        
+        payload = {"type": "command", "action": "call_meeting", "bot_id": bot_id}
+        await active_connection.send(json.dumps(payload))
+        
+        other_bots = [b for b in context.get('MASTER_TASKS').keys() if b != bot_id]
+        interrupt_bot(other_bots, context)
+    except asyncio.CancelledError:
+        print(f"Bot {bot_id} interrupted from calling meeting")
+    finally:
+        if bot_id in active_actions: del active_actions[bot_id]
+        
+async def kill_target(parts, context):
+    active_actions = context.get('active_actions')
+    bots= context.get('bots')
+    cooldowns = context.get('cooldowns')
+        
+    
+    imposter_id = int(parts[0])
+    victim_id = int(parts[1])
+    
+    if bots[imposter_id]['role'] == "crewmate" or bots[victim_id]['role'] == "imposter":
+        print("Invalid kill command")
+        return
+    
+    if imposter_id in cooldowns['kill']:
+        if time.time() < cooldowns['kill'][imposter_id]:
+            remaining = int(cooldowns['kill'][imposter_id] - time.time())
+            print(f"Bot {imposter_id} cannot perform another kill for {remaining} seconds")
+            return
+        else:
+            del cooldowns['kill'][imposter_id]
+    
+    interrupt_bot(imposter_id, context)
+    print(f"Bot {imposter_id} preparing to kill bot {victim_id}")
+    
+    active_actions[imposter_id] = asyncio.create_task(run_hunt_sequence(imposter_id, victim_id, context))
+    
+async def run_hunt_sequence(imposter_id, victim_id, context):
+    active_connection = context.get('active_connection')
+    active_actions = context.get('active_actions')
+    bots = context.get('bots')
+    traverse_path = context.get('traverse_path')
+    
+    try:
+        while True:
+            if not bots[imposter_id]['position'] or not bots[victim_id]['position']:
+                print("Lost track of bots")
+                break
+            
+            imposter_node = nav.find_nearest_node(bots[imposter_id]['position']['x'], bots[imposter_id]['position']['y'])
+            victim_node = nav.find_nearest_node(bots[victim_id]['position']['x'], bots[victim_id]['position']['y'])
+            
+            if imposter_node == victim_node:
+                payload = {
+                    "type": "command",
+                    "action": "hunt",
+                    "bot_id": imposter_id,
+                    "target_id": victim_id
+                }
+                await active_connection.send(json.dumps(payload))
+                break
+            else:
+                await traverse_path(imposter_id, victim_node)
+    except asyncio.CancelledError:
+        print(f"Bot {imposter_id}'s hunt was interrupted")
+        raise 
+    finally:
+        if imposter_id in active_actions: del active_actions[imposter_id]
+        
+async def print_roles(parts, context):
+    bots = context.get('bots')
+    for bot, info in bots.items():
+        print(f"{bot}: {info['role']}")
+        
+async def report_body(parts, context):
+    active_connection = context.get('active_connection')
+    
+    bot_id = int(parts[0])
+    
+    payload = {
+        "type": "command",
+        "action": "report",
+        "bot_id": bot_id
+    }
+    await active_connection.send(json.dumps(payload))

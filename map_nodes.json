@@ -1,0 +1,964 @@
+{
+    "nodes": {
+        "cafeteria_south": {
+            "x": -0.74,
+            "y": -1.5
+        },
+        "emergency_table_south": {
+            "x": -0.77,
+            "y": -0.18
+        },
+        "emergency_table_north": {
+            "x": -0.77,
+            "y": 3
+        },
+        "cafeteria_west": {
+            "x": -3.65,
+            "y": 1.37
+        },
+        "cafeteria_northwest": {
+            "x": -5.5,
+            "y": 3
+        },
+        "cafeteria_east": {
+            "x": 1.84,
+            "y": 1.07
+        },
+        "cafeteria_vent": {
+            "x": 4.27,
+            "y": -0.11
+        },
+        "cafeteria_garbage": {
+            "x": 3.85,
+            "y": 3.58
+        },
+        "cafeteria_data_download": {
+            "x": 3.13,
+            "y": 4.47
+        },
+        "weapons_west": {
+            "x": 8.15,
+            "y": 1.16
+        },
+        "weapons_south": {
+            "x": 9.47,
+            "y": 0.87
+        },
+        "weapons_east": {
+            "x": 10.28,
+            "y": 2.1
+        },
+        "weapons_accept_power": {
+            "x": 11.19,
+            "y": 2
+        },
+        "weapons_north": {
+            "x": 9.24,
+            "y": 2.7
+        },
+        "weapons_asteroids": {
+            "x": 9.6,
+            "y": 2.22
+        },
+        "weapons_vent": {
+            "x": 8.84,
+            "y": 3.49
+        },
+        "weapons_data_download": {
+            "x": 8.63,
+            "y": 3.73
+        },
+        "east_intersection_1": {
+            "x": 9.54,
+            "y": -3.39
+        },
+        "o2_main": {
+            "x": 6.7,
+            "y": -3.44
+        },
+        "o2_filter": {
+            "x": 6.18,
+            "y": -3.09
+        },
+        "o2_chute": {
+            "x": 5.54,
+            "y": -3.45
+        },
+        "east_intersection_2": {
+            "x": 11.96,
+            "y": -3.45
+        },
+        "east_intersection_3": {
+            "x": 11.96,
+            "y": -4.78
+        },
+        "navigation_main": {
+            "x": 16.46,
+            "y": -4.7
+        },
+        "navigation_steering": {
+            "x": 17.53,
+            "y": -4.66
+        },
+        "navigation_vent_north": {
+            "x": 16.03,
+            "y": -3.02
+        },
+        "navigation_data_download": {
+            "x": 16.87,
+            "y": -3.02
+        },
+        "navigation_chart_course": {
+            "x": 17.28,
+            "y": -3.02
+        },
+        "navigation_vent_south": {
+            "x": 16.01,
+            "y": -6.13
+        },
+        "east_intersection_4": {
+            "x": 11.88,
+            "y": -6.44
+        },
+        "east_hall_vent": {
+            "x": 9.52,
+            "y": -6.5
+        },
+        "shields_main": {
+            "x": 9.52,
+            "y": -12.17
+        },
+        "shields_vent": {
+            "x": 9.52,
+            "y": -14.25
+        },
+        "shields_prime": {
+            "x": 8.02,
+            "y": -14.25
+        },
+        "shields_north": {
+            "x": 9.5,
+            "y": -10.35
+        },
+        "shields_accept_power": {
+            "x": 10.76,
+            "y": -10.35
+        },
+        "southeast_intersection_1": {
+            "x": 5.2,
+            "y": -12.18
+        },
+        "communications_main": {
+            "x": 5.19,
+            "y": -14.54
+        },
+        "communications_data_download": {
+            "x": 4.27,
+            "y": -14.54
+        },
+        "communications_sabotage": {
+            "x": 4.21,
+            "y": -16.4
+        },
+        "communications_accept_power": {
+            "x": 6.13,
+            "y": -14.38
+        },
+        "storage_east": {
+            "x": 0.34,
+            "y": -12.25
+        },
+        "storage_south": {
+            "x": 0.28,
+            "y": -15.8
+        },
+        "storage_southwest": {
+            "x": -2.89,
+            "y": -15.8
+        },
+        "storage_fuel": {
+            "x": -2.89,
+            "y": -14.46
+        },
+        "storage_garbage": {
+            "x": 0.67,
+            "y": -16.62
+        },
+        "storage_west": {
+            "x": -4.47,
+            "y": -14.46
+        },
+        "storage_northwest": {
+            "x": -4.47,
+            "y": -10.71
+        },
+        "storage_north": {
+            "x": -0.61,
+            "y": -10.61
+        },
+        "storage_northeast": {
+            "x": 0.39,
+            "y": -10.61
+        },
+        "central_intersection": {
+            "x": -0.61,
+            "y": -7.11
+        },
+        "admin_main": {
+            "x": 2.71,
+            "y": -7.17
+        },
+        "admin_overview": {
+            "x": 2.71,
+            "y": -8.51
+        },
+        "admin_vent": {
+            "x": 2.71,
+            "y": -9.76
+        },
+        "admin_east": {
+            "x": 6.43,
+            "y": -7.22
+        },
+        "admin_card_swipe": {
+            "x": 6.43,
+            "y": -8.47
+        },
+        "southwest_intersection_1": {
+            "x": -9.51,
+            "y": -14.53
+        },
+        "electrical_main": {
+            "x": -9.51,
+            "y": -10.9
+        },
+        "electrical_lights": {
+            "x": -9.75,
+            "y": -10.49
+        },
+        "electrical_east": {
+            "x": -7.01,
+            "y": -10.9
+        },
+        "electrical_northeast": {
+            "x": -7.01,
+            "y": -8.48
+        },
+        "electrical_distributor": {
+            "x": -6,
+            "y": -8.1
+        },
+        "electrical_wiring": {
+            "x": -7.71,
+            "y": -8.1
+        },
+        "electrical_vent": {
+            "x": -9.73,
+            "y": -8.27
+        },
+        "electrical_diverter": {
+            "x": -9.02,
+            "y": -7.85
+        },
+        "electrical_data_download": {
+            "x": -9.79,
+            "y": -7.76
+        },
+        "storage_wiring": {
+            "x": -1.9,
+            "y": -9.14
+        },
+        "cafeteria_wiring": {
+            "x": -5.17,
+            "y": 4.72
+        },
+        "southwest_intersection_2": {
+            "x": -12.09,
+            "y": -14.48
+        },
+        "southwest_intersection_3": {
+            "x": -12.09,
+            "y": -11.64
+        },
+        "lower_engine_east": {
+            "x": -15.31,
+            "y": -11.68
+        },
+        "lower_engine_vent": {
+            "x": -15.31,
+            "y": -13.43
+        },
+        "lower_engine_northeast": {
+            "x": -15.31,
+            "y": -9.85
+        },
+        "lower_engine_north": {
+            "x": -16.81,
+            "y": -9.85
+        },
+        "lower_engine_align": {
+            "x": -18.91,
+            "y": -13.07
+        },
+        "lower_engine_refuel": {
+            "x": -18.01,
+            "y": -12.45
+        },
+        "lower_engine_accept_power": {
+            "x": -18.04,
+            "y": -9.45
+        },
+        "west_intersection_1": {
+            "x": -16.92,
+            "y": -5.39
+        },
+        "security_main": {
+            "x": -13.42,
+            "y": -5.39
+        },
+        "security_south": {
+            "x": -13.42,
+            "y": -6.72
+        },
+        "security_vent": {
+            "x": -12.59,
+            "y": -6.72
+        },
+        "security_north": {
+            "x": -13.52,
+            "y": -3.84
+        },
+        "security_northeast": {
+            "x": -12.86,
+            "y": -3.84
+        },
+        "security_terminal": {
+            "x": -12.86,
+            "y": -3.01
+        },
+        "reactor_main": {
+            "x": -21.16,
+            "y": -5.46
+        },
+        "reactor_switch": {
+            "x": -21.9,
+            "y": -2.52
+        },
+        "reactor_north": {
+            "x": -21.32,
+            "y": -2.53
+        },
+        "reactor_sabotage_north": {
+            "x": -21.35,
+            "y": -1.69
+        },
+        "reactor_sabotage_south": {
+            "x": -21.35,
+            "y": -8.62
+        },
+        "reactor_accept_power": {
+            "x": -20,
+            "y": -3.39
+        },
+        "upper_engine_south": {
+            "x": -16.87,
+            "y": -0.92
+        },
+        "upper_engine_align": {
+            "x": -19.06,
+            "y": -0.86
+        },
+        "upper_engine_refuel": {
+            "x": -18.04,
+            "y": -0.33
+        },
+        "upper_engine_southeast": {
+            "x": -15.37,
+            "y": -0.92
+        },
+        "upper_engine_east": {
+            "x": -15.37,
+            "y": 1.08
+        },
+        "upper_engine_vent": {
+            "x": -15.37,
+            "y": 2.75
+        },
+        "upper_engine_accept_power": {
+            "x": -17.24,
+            "y": 2.83
+        },
+        "northwest_intersection_1": {
+            "x": -9.1,
+            "y": 1.06
+        },
+        "medbay_main": {
+            "x": -9.06,
+            "y": -4.23
+        },
+        "medbay_vent": {
+            "x": -10.56,
+            "y": -4.23
+        },
+        "medbay_scanner": {
+            "x": -7.2,
+            "y": -4.86
+        },
+        "medbay_inspector": {
+            "x": -6.78,
+            "y": -4.32
+        },
+        "reactor_south_vent": {
+            "x": -21.3,
+            "y": -6.73
+        },
+        "admin_wiring": {
+            "x": 1.36,
+            "y": -6.98
+        },
+        "admin_oxygen": {
+            "x": 6.52,
+            "y": -6.65
+        },
+        "navigation_wiring": {
+            "x": 14.47,
+            "y": -4.33
+        },
+        "security_wiring": {
+            "x": -15.55,
+            "y": -5.15
+        },
+        "navigation_accept_power": {
+            "x": 16.04,
+            "y": -2.75
+        },
+        "o2_accept_power": {
+            "x": 8.32,
+            "y": -2.88
+        },
+        "o2_restore": {
+            "x": 6.74,
+            "y": -3.04
+        }
+    },
+    "edges": [
+        [
+            "cafeteria_south",
+            "emergency_table_south"
+        ],
+        [
+            "cafeteria_south",
+            "cafeteria_east"
+        ],
+        [
+            "cafeteria_south",
+            "cafeteria_west"
+        ],
+        [
+            "cafeteria_west",
+            "cafeteria_northwest"
+        ],
+        [
+            "cafeteria_east",
+            "cafeteria_vent"
+        ],
+        [
+            "cafeteria_east",
+            "cafeteria_garbage"
+        ],
+        [
+            "cafeteria_garbage",
+            "cafeteria_data_download"
+        ],
+        [
+            "cafeteria_northwest",
+            "cafeteria_wiring"
+        ],
+        [
+            "cafeteria_east",
+            "weapons_west"
+        ],
+        [
+            "weapons_west",
+            "weapons_south"
+        ],
+        [
+            "weapons_south",
+            "weapons_east"
+        ],
+        [
+            "weapons_east",
+            "weapons_accept_power"
+        ],
+        [
+            "weapons_east",
+            "weapons_north"
+        ],
+        [
+            "weapons_north",
+            "weapons_vent"
+        ],
+        [
+            "weapons_north",
+            "weapons_data_download"
+        ],
+        [
+            "weapons_north",
+            "weapons_asteroids"
+        ],
+        [
+            "weapons_east",
+            "weapons_asteroids"
+        ],
+        [
+            "weapons_south",
+            "east_intersection_1"
+        ],
+        [
+            "east_intersection_1",
+            "o2_main"
+        ],
+        [
+            "o2_main",
+            "o2_filter"
+        ],
+        [
+            "o2_main",
+            "o2_chute"
+        ],
+        [
+            "o2_main",
+            "o2_restore"
+        ],
+        [
+            "east_intersection_1",
+            "o2_accept_power"
+        ],
+        [
+            "east_intersection_1",
+            "east_intersection_2"
+        ],
+        [
+            "east_intersection_2",
+            "east_intersection_3"
+        ],
+        [
+            "east_intersection_3",
+            "east_intersection_4"
+        ],
+        [
+            "east_intersection_3",
+            "navigation_main"
+        ],
+        [
+            "navigation_main",
+            "navigation_vent_south"
+        ],
+        [
+            "navigation_main",
+            "navigation_steering"
+        ],
+        [
+            "navigation_main",
+            "navigation_vent_north"
+        ],
+        [
+            "navigation_vent_north",
+            "navigation_accept_power"
+        ],
+        [
+            "navigation_data_download",
+            "navigation_main"
+        ],
+        [
+            "navigation_data_download",
+            "navigation_chart_course"
+        ],
+        [
+            "east_intersection_4",
+            "east_hall_vent"
+        ],
+        [
+            "east_hall_vent",
+            "shields_north"
+        ],
+        [
+            "shields_north",
+            "shields_main"
+        ],
+        [
+            "shields_north",
+            "shields_accept_power"
+        ],
+        [
+            "shields_main",
+            "shields_vent"
+        ],
+        [
+            "shields_vent",
+            "shields_prime"
+        ],
+        [
+            "shields_main",
+            "southeast_intersection_1"
+        ],
+        [
+            "southeast_intersection_1",
+            "communications_main"
+        ],
+        [
+            "communications_main",
+            "communications_data_download"
+        ],
+        [
+            "southeast_intersection_1",
+            "storage_east"
+        ],
+        [
+            "storage_east",
+            "storage_south"
+        ],
+        [
+            "storage_south",
+            "storage_southwest"
+        ],
+        [
+            "storage_southwest",
+            "storage_fuel"
+        ],
+        [
+            "storage_fuel",
+            "storage_west"
+        ],
+        [
+            "storage_west",
+            "storage_southwest"
+        ],
+        [
+            "storage_west",
+            "storage_northwest"
+        ],
+        [
+            "storage_northwest",
+            "storage_north"
+        ],
+        [
+            "storage_north",
+            "storage_northeast"
+        ],
+        [
+            "storage_northeast",
+            "storage_east"
+        ],
+        [
+            "storage_north",
+            "storage_wiring"
+        ],
+        [
+            "storage_north",
+            "central_intersection"
+        ],
+        [
+            "central_intersection",
+            "cafeteria_south"
+        ],
+        [
+            "central_intersection",
+            "admin_main"
+        ],
+        [
+            "admin_main",
+            "admin_overview"
+        ],
+        [
+            "admin_overview",
+            "admin_vent"
+        ],
+        [
+            "admin_main",
+            "admin_east"
+        ],
+        [
+            "admin_east",
+            "admin_card_swipe"
+        ],
+        [
+            "admin_card_swipe",
+            "admin_east"
+        ],
+        [
+            "storage_west",
+            "southwest_intersection_1"
+        ],
+        [
+            "southwest_intersection_1",
+            "electrical_main"
+        ],
+        [
+            "electrical_main",
+            "electrical_east"
+        ],
+        [
+            "electrical_east",
+            "electrical_northeast"
+        ],
+        [
+            "electrical_northeast",
+            "electrical_distributor"
+        ],
+        [
+            "electrical_northeast",
+            "electrical_wiring"
+        ],
+        [
+            "electrical_wiring",
+            "electrical_vent"
+        ],
+        [
+            "electrical_vent",
+            "electrical_diverter"
+        ],
+        [
+            "southwest_intersection_1",
+            "southwest_intersection_2"
+        ],
+        [
+            "southwest_intersection_2",
+            "southwest_intersection_3"
+        ],
+        [
+            "southwest_intersection_3",
+            "lower_engine_east"
+        ],
+        [
+            "lower_engine_east",
+            "lower_engine_vent"
+        ],
+        [
+            "lower_engine_east",
+            "lower_engine_northeast"
+        ],
+        [
+            "lower_engine_northeast",
+            "lower_engine_north"
+        ],
+        [
+            "lower_engine_north",
+            "west_intersection_1"
+        ],
+        [
+            "west_intersection_1",
+            "security_main"
+        ],
+        [
+            "security_main",
+            "security_south"
+        ],
+        [
+            "security_south",
+            "security_vent"
+        ],
+        [
+            "security_main",
+            "security_north"
+        ],
+        [
+            "security_north",
+            "security_northeast"
+        ],
+        [
+            "security_northeast",
+            "security_terminal"
+        ],
+        [
+            "west_intersection_1",
+            "reactor_main"
+        ],
+        [
+            "reactor_main",
+            "reactor_south_vent"
+        ],
+        [
+            "reactor_main",
+            "reactor_north"
+        ],
+        [
+            "reactor_north",
+            "reactor_switch"
+        ],
+        [
+            "west_intersection_1",
+            "upper_engine_south"
+        ],
+        [
+            "upper_engine_south",
+            "upper_engine_southeast"
+        ],
+        [
+            "upper_engine_southeast",
+            "upper_engine_east"
+        ],
+        [
+            "upper_engine_east",
+            "upper_engine_vent"
+        ],
+        [
+            "upper_engine_east",
+            "northwest_intersection_1"
+        ],
+        [
+            "northwest_intersection_1",
+            "cafeteria_west"
+        ],
+        [
+            "northwest_intersection_1",
+            "medbay_main"
+        ],
+        [
+            "medbay_main",
+            "medbay_vent"
+        ],
+        [
+            "medbay_main",
+            "medbay_scanner"
+        ],
+        [
+            "medbay_main",
+            "medbay_inspector"
+        ],
+        [
+            "medbay_scanner",
+            "medbay_inspector"
+        ],
+        [
+            "navigation_main",
+            "navigation_wiring"
+        ],
+        [
+            "east_intersection_3",
+            "navigation_wiring"
+        ],
+        [
+            "central_intersection",
+            "admin_wiring"
+        ],
+        [
+            "admin_wiring",
+            "admin_main"
+        ],
+        [
+            "west_intersection_1",
+            "security_wiring"
+        ],
+        [
+            "security_main",
+            "security_wiring"
+        ],
+        [
+            "emergency_table_north",
+            "cafeteria_west"
+        ],
+        [
+            "emergency_table_north",
+            "cafeteria_east"
+        ],
+        [
+            "electrical_vent",
+            "electrical_data_download"
+        ],
+        [
+            "electrical_lights",
+            "electrical_main"
+        ],
+        [
+            "upper_engine_accept_power",
+            "upper_engine_vent"
+        ],
+        [
+            "reactor_sabotage_north",
+            "reactor_north"
+        ],
+        [
+            "reactor_main",
+            "reactor_accept_power"
+        ],
+        [
+            "reactor_main",
+            "reactor_sabotage_south"
+        ],
+        [
+            "upper_engine_align",
+            "upper_engine_south"
+        ],
+        [
+            "upper_engine_refuel",
+            "upper_engine_south"
+        ],
+        [
+            "lower_engine_refuel",
+            "lower_engine_vent"
+        ],
+        [
+            "lower_engine_align",
+            "lower_engine_vent"
+        ],
+        [
+            "lower_engine_north",
+            "lower_engine_accept_power"
+        ],
+        [
+            "storage_south",
+            "storage_garbage"
+        ],
+        [
+            "communications_main",
+            "communications_sabotage"
+        ],
+        [
+            "communications_main",
+            "communications_accept_power"
+        ]
+    ],
+    "vent_edges": [
+        [
+            "cafeteria_vent",
+            "east_hall_vent"
+        ],
+        [
+            "east_hall_vent",
+            "admin_vent"
+        ],
+        [
+            "admin_vent",
+            "cafeteria_vent"
+        ],
+        [
+            "medbay_vent",
+            "electrical_vent"
+        ],
+        [
+            "electrical_vent",
+            "security_vent"
+        ],
+        [
+            "security_vent",
+            "medbay_vent"
+        ],
+        [
+            "upper_engine_vent",
+            "reactor_north"
+        ],
+        [
+            "reactor_south_vent",
+            "lower_engine_vent"
+        ],
+        [
+            "shields_vent",
+            "navigation_vent_south"
+        ],
+        [
+            "navigation_vent_north",
+            "weapons_vent"
+        ]
+    ]
+}

@@ -1,0 +1,267 @@
+{
+    "FixWiring": {
+        "duration": [
+            3.8,
+            5.4
+        ],
+        "async": false,
+        "random": true,
+        "locations": [
+            "admin_wiring",
+            "cafeteria_wiring",
+            "electrical_wiring",
+            "navigation_wiring",
+            "security_wiring",
+            "storage_wiring"
+        ]
+    },
+    "SwipeCardTask": {
+        "duration": [
+            2.5,
+            7.0
+        ],
+        "async": false,
+        "random": false,
+        "locations": []
+    },
+    "InspectSample": {
+        "duration": [
+            4.4,
+            4.4
+        ],
+        "async": true,
+        "random": false,
+        "locations": ["medbay_inspector"]
+    },
+    "RefuelTask": {
+        "duration": [4.3, 4.3],
+        "async": false,
+        "random": false,
+        "locations": ["upper_engine_refuel", "storage_fuel", "lower_engine_refuel"]
+    },
+    "ClearAsteroids": {
+        "duration": [
+            13.0,
+            20.0
+        ],
+        "async": false,
+        "random": false,
+        "locations": []
+    },
+    "VentCleaning": {
+        "duration": [
+            2.5,
+            4.0
+        ],
+        "async": false,
+        "random": false,
+        "locations": []
+    },
+    "DivertRightEnginePower": {
+        "duration": [
+            0.1,
+            1.0
+        ],
+        "async": false,
+        "random": false,
+        "locations": ["lower_engine_accept_power"]
+    },
+    "CalibrateDistributorTask": {
+        "duration": [
+            4.0,
+            10.0
+        ],
+        "async": false,
+        "random": false,
+        "locations": []
+    },
+    "CleanO2Filter": {
+        "duration": [
+            6.9,
+            9.0
+        ],
+        "async": false,
+        "random": false,
+        "locations": []
+    },
+    "UnlockManifoldsTask": {
+        "duration": [
+            5.2,
+            7.0
+        ],
+        "async": false,
+        "random": false,
+        "locations": []
+    },
+    "EmptyGarbage": {
+        "duration": [
+            4.7,
+            4.7
+        ],
+        "async": false,
+        "random": false,
+        "locations": ["storage_garbage"]
+    },
+    "StartReactorTask": {
+        "duration": [
+            17.5,
+            30.0
+        ],
+        "async": false,
+        "random": false,
+        "locations": []
+    },
+    "MedScanTask": {
+        "duration": [10.0, 10.0],
+        "async": false,
+        "random": false,
+        "locations": []
+    },
+    "PrimeShieldsTask": {
+        "duration": [
+            2.0,
+            4.0
+        ],
+        "async": false,
+        "random": false,
+        "locations": []
+    },
+    "DivertCommsPower": {
+        "duration": [
+            0.1,
+            1.0
+        ],
+        "async": false,
+        "random": false,
+        "locations": ["communications_accept_power"]
+    },
+    "UploadComms": {
+        "duration": [
+            8.9,
+            8.9
+        ],
+        "async": false,
+        "random": false,
+        "locations": ["admin_data_download"]
+    },
+    "StabilizeSteeringTask": {
+        "duration": [
+            0.1,
+            1.0
+        ],
+        "async": false,
+        "random": false,
+        "locations": []
+    },
+    "ChartCourseTask": {
+        "duration": [2.0, 4.0],
+        "async": false,
+        "random": false,
+        "locations": []
+    },
+    "EmptyFilterChute": {
+        "duration": [
+            4.7,
+            4.7
+        ],
+        "async": false,
+        "random": false,
+        "locations": ["storage_garbage"]
+    },
+    "AlignEnginesTask": {
+        "duration": [1.5, 3.0],
+        "async": false,
+        "random": false,
+        "locations": []
+    },
+    "DivertNavPower": {
+        "duration": [
+            0.1,
+            1.0
+        ],
+        "async": false,
+        "random": false,
+        "locations": ["navigation_accept_power"]
+    },
+    "UploadCafeStock": {
+        "duration": [
+            8.9,
+            8.9
+        ],
+        "async": false,
+        "random": false,
+        "locations": ["admin_data_download"]
+    },
+    "DivertSecurityPower": {
+        "duration": [
+            0.1,
+            1.0
+        ],
+        "async": false,
+        "random": false,
+        "locations": ["security_accept_power"]
+    },
+    "UploadNav": {
+        "duration": [
+            8.9,
+            8.9
+        ],
+        "async": false,
+        "random": false,
+        "locations": ["admin_data_download"]
+    },
+    "DivertLifeSuppPower": {
+        "duration": [
+            0.1,
+            1.0
+        ],
+        "async": false,
+        "random": false,
+        "locations": ["o2_accept_power"]
+    },
+    "UploadWeapons": {
+        "duration": [
+            8.9,
+            8.9
+        ],
+        "async": false,
+        "random": false,
+        "locations": ["admin_data_download"]
+    },
+    "DivertLeftEnginePower": {
+        "duration": [
+            0.1,
+            1.0
+        ],
+        "async": false,
+        "random": false,
+        "locations": ["upper_engine_accept_power"]
+    },
+    "UploadElectricTask": {
+        "duration": [
+            8.9,
+            8.9
+        ],
+        "async": false,
+        "random": false,
+        "locations": ["upper_engine_accept_power"]
+    },
+    "DivertWeaponPower": {
+        "duration": [
+            0.1,
+            1.0
+        ],
+        "async": false,
+        "random": false,
+        "locations": ["weapons_accept_power"]
+    },
+    "DivertShieldPower": {
+        "duration": [
+            0.1,
+            1.0
+        ],
+        "async": false,
+        "random": false,
+        "locations": ["shields_accept_power"]
+    }
+}
