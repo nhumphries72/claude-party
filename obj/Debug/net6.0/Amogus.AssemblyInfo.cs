@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Amogus")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f85e1bde90395060716c81e888e5ad852c62d725")]
 [assembly: System.Reflection.AssemblyProductAttribute("Amogus")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Amogus")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

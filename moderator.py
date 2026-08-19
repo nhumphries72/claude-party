@@ -5,10 +5,12 @@ import time
 import random
 from navigator import Navigator
 from cli_functions import execute_command
+from events import handle_events
 
 active_connection = None
 nav = Navigator()
-with open("map_nodes.json", 'r') as node_map: NODE_MAP = json.load(node_map).get("nodes")
+with open("map_nodes.json", 'r') as node_map:
+    NODE_MAP = json.load(node_map).get("nodes")
 with open("task_info.json", 'r') as task_info: TASK_INFO = json.load(task_info)
 
 bots, bot_arrival_events, active_actions, MASTER_TASKS = {}, {}, {}, {}
@@ -34,17 +36,14 @@ async def handle_game_state(websocket):
                     bots[int(id)]['role'] = "imposter" if info['imposter'] else "crewmate"
             
             elif data.get('type') == "event":
-                if data.get("event_type") == "arrived":
-                    bot_id = data.get("bot_id")
-                    if bot_id in bot_arrival_events: bot_arrival_events[bot_id].set()
-                elif data.get("event_type") == "task_complete":
-                    print(f"\nBot {data.get('bot_id')} completed {data.get('task_name')}")
-                elif data.get("event_type") == "kill_complete":
-                    bot_id = data.get('bot_id')
-                    target_id = data.get('target_id')
-                    print(f"Bot {target_id} was murdered by bot {bot_id}")
-                    if bot_id in active_actions: del active_actions[bot_id]
-                    cooldowns['kill'][bot_id] = time.time() + 45
+                event_context = {
+                    "data": data,
+                    "bot_arrival_events": bot_arrival_events,
+                    "active_actions": active_actions,
+                    "cooldowns": cooldowns,
+                    "navigator": nav
+                }
+                handle_events(event_context)
                 
             elif data.get('type') == "init_tasks":
                 assignments = data.get("assignments", {})
@@ -83,6 +82,7 @@ async def handle_game_state(websocket):
                 for bot in assignments.keys():
                     if bots[int(bot)]['role'] == "imposter":
                         cooldowns['kill'][int(bot)] = time.time() + 10
+                        cooldowns['sabotage'][int(bot)] = time.time() + 10
                             
             elif data.get('type') == "location":
                 print(data.get("current_location"))
@@ -148,7 +148,8 @@ async def cli():
             "traverse_path": traverse_path,
             "bots": bots,
             "bot_arrival_events": bot_arrival_events,
-            "cooldowns": cooldowns
+            "cooldowns": cooldowns,
+            "navigator": nav
         }
         
         await execute_command(command, parts, context)

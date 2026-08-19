@@ -1,17 +1,6 @@
 {
     "0": [
         {
-            "task": "SwipeCardTask",
-            "duration": [
-                2.5,
-                7.0
-            ],
-            "locations": [
-                "admin_card_swipe"
-            ],
-            "async": false
-        },
-        {
             "task": "FixWiring",
             "duration": [
                 3.8,
@@ -19,105 +8,12 @@
             ],
             "locations": [
                 "electrical_wiring",
-                "electrical_wiring",
+                "navigation_wiring",
                 "cafeteria_wiring"
             ],
             "async": false
         },
         {
-            "task": "EmptyGarbage",
-            "duration": [
-                4.7,
-                4.7
-            ],
-            "locations": [
-                "cafeteria_garbage",
-                "storage_garbage"
-            ],
-            "async": false
-        },
-        {
-            "task": "ClearAsteroids",
-            "duration": [
-                13.0,
-                20.0
-            ],
-            "locations": [
-                "weapons_asteroids"
-            ],
-            "async": false
-        },
-        {
-            "task": "StartReactorTask",
-            "duration": [
-                17.5,
-                30.0
-            ],
-            "locations": [
-                "reactor_main"
-            ],
-            "async": false
-        },
-        {
-            "task": "VentCleaning",
-            "duration": [
-                2.5,
-                4.0
-            ],
-            "locations": [
-                "upper_engine_vent"
-            ],
-            "async": false
-        },
-        {
-            "task": "DivertSecurityPower",
-            "duration": [
-                0.1,
-                1.0
-            ],
-            "locations": [
-                "electrical_diverter",
-                "security_accept_power"
-            ],
-            "async": false
-        },
-        {
-            "task": "UploadNav",
-            "duration": [
-                8.9,
-                8.9
-            ],
-            "locations": [
-                "navigation_data_download",
-                "admin_data_download"
-            ],
-            "async": false
-        },
-        {
-            "task": "UnlockManifoldsTask",
-            "duration": [
-                5.2,
-                7.0
-            ],
-            "locations": [
-                "reactor_switch"
-            ],
-            "async": false
-        },
-        {
-            "task": "CalibrateDistributorTask",
-            "duration": [
-                4.0,
-                10.0
-            ],
-            "locations": [
-                "electrical_distributor"
-            ],
-            "async": false
-        }
-    ],
-    "1": [
-        {
             "task": "SwipeCardTask",
             "duration": [
                 2.5,
@@ -129,29 +25,15 @@
             "async": false
         },
         {
-            "task": "FixWiring",
+            "task": "MedScanTask",
             "duration": [
-                3.8,
-                5.4
+                10.0,
+                10.0
             ],
             "locations": [
-                "electrical_wiring",
-                "security_wiring",
-                "electrical_wiring"
+                "medbay_scanner"
             ],
             "async": false
-        },
-        {
-            "task": "InspectSample",
-            "duration": [
-                4.4,
-                4.4
-            ],
-            "locations": [
-                "medbay_inspector",
-                "medbay_inspector"
-            ],
-            "async": true
         },
         {
             "task": "AlignEnginesTask",
@@ -177,25 +59,37 @@
             "async": false
         },
         {
-            "task": "DivertWeaponPower",
+            "task": "UploadWeapons",
+            "duration": [
+                8.9,
+                8.9
+            ],
+            "locations": [
+                "weapons_data_download",
+                "admin_data_download"
+            ],
+            "async": false
+        },
+        {
+            "task": "DivertNavPower",
             "duration": [
                 0.1,
                 1.0
             ],
             "locations": [
                 "electrical_diverter",
-                "weapons_accept_power"
+                "navigation_accept_power"
             ],
             "async": false
         },
         {
-            "task": "PrimeShieldsTask",
+            "task": "UnlockManifoldsTask",
             "duration": [
-                2.0,
-                4.0
+                5.2,
+                7.0
             ],
             "locations": [
-                "shields_prime"
+                "reactor_switch"
             ],
             "async": false
         },
@@ -211,18 +105,6 @@
             "async": false
         },
         {
-            "task": "UploadCafeStock",
-            "duration": [
-                8.9,
-                8.9
-            ],
-            "locations": [
-                "cafeteria_data_download",
-                "admin_data_download"
-            ],
-            "async": false
-        },
-        {
             "task": "CleanO2Filter",
             "duration": [
                 6.9,
@@ -234,7 +116,20 @@
             "async": false
         }
     ],
-    "2": [
+    "1": [
+        {
+            "task": "FixWiring",
+            "duration": [
+                3.8,
+                5.4
+            ],
+            "locations": [
+                "admin_wiring",
+                "navigation_wiring",
+                "security_wiring"
+            ],
+            "async": false
+        },
         {
             "task": "SwipeCardTask",
             "duration": [
@@ -247,26 +142,13 @@
             "async": false
         },
         {
-            "task": "FixWiring",
+            "task": "ClearAsteroids",
             "duration": [
-                3.8,
-                5.4
+                13.0,
+                20.0
             ],
             "locations": [
-                "storage_wiring",
-                "admin_wiring",
-                "cafeteria_wiring"
-            ],
-            "async": false
-        },
-        {
-            "task": "MedScanTask",
-            "duration": [
-                10.0,
-                10.0
-            ],
-            "locations": [
-                "medbay_scanner"
+                "weapons_asteroids"
             ],
             "async": false
         },
@@ -285,13 +167,132 @@
             "async": false
         },
         {
-            "task": "ClearAsteroids",
+            "task": "EmptyGarbage",
             "duration": [
-                13.0,
-                20.0
+                4.7,
+                4.7
             ],
             "locations": [
-                "weapons_asteroids"
+                "cafeteria_garbage",
+                "storage_garbage"
+            ],
+            "async": false
+        },
+        {
+            "task": "VentCleaning",
+            "duration": [
+                2.5,
+                4.0
+            ],
+            "locations": [
+                "security_vent"
+            ],
+            "async": false
+        },
+        {
+            "task": "DivertCommsPower",
+            "duration": [
+                0.1,
+                1.0
+            ],
+            "locations": [
+                "electrical_diverter",
+                "communications_accept_power"
+            ],
+            "async": false
+        },
+        {
+            "task": "PrimeShieldsTask",
+            "duration": [
+                2.0,
+                4.0
+            ],
+            "locations": [
+                "shields_prime"
+            ],
+            "async": false
+        },
+        {
+            "task": "UploadNav",
+            "duration": [
+                8.9,
+                8.9
+            ],
+            "locations": [
+                "navigation_data_download",
+                "admin_data_download"
+            ],
+            "async": false
+        },
+        {
+            "task": "StabilizeSteeringTask",
+            "duration": [
+                0.1,
+                1.0
+            ],
+            "locations": [
+                "navigation_steering"
+            ],
+            "async": false
+        }
+    ],
+    "2": [
+        {
+            "task": "FixWiring",
+            "duration": [
+                3.8,
+                5.4
+            ],
+            "locations": [
+                "electrical_wiring",
+                "admin_wiring",
+                "navigation_wiring"
+            ],
+            "async": false
+        },
+        {
+            "task": "SwipeCardTask",
+            "duration": [
+                2.5,
+                7.0
+            ],
+            "locations": [
+                "admin_card_swipe"
+            ],
+            "async": false
+        },
+        {
+            "task": "InspectSample",
+            "duration": [
+                4.4,
+                4.4
+            ],
+            "locations": [
+                "medbay_inspector",
+                "medbay_inspector"
+            ],
+            "async": true
+        },
+        {
+            "task": "StartReactorTask",
+            "duration": [
+                17.5,
+                30.0
+            ],
+            "locations": [
+                "reactor_main"
+            ],
+            "async": false
+        },
+        {
+            "task": "EmptyGarbage",
+            "duration": [
+                4.7,
+                4.7
+            ],
+            "locations": [
+                "cafeteria_garbage",
+                "storage_garbage"
             ],
             "async": false
         },
@@ -308,6 +309,123 @@
             "async": false
         },
         {
+            "task": "UploadElectricTask",
+            "duration": [
+                8.9,
+                8.9
+            ],
+            "locations": [
+                "electrical_data_download",
+                "upper_engine_accept_power"
+            ],
+            "async": false
+        },
+        {
+            "task": "CalibrateDistributorTask",
+            "duration": [
+                4.0,
+                10.0
+            ],
+            "locations": [
+                "electrical_distributor"
+            ],
+            "async": false
+        },
+        {
+            "task": "PrimeShieldsTask",
+            "duration": [
+                2.0,
+                4.0
+            ],
+            "locations": [
+                "shields_prime"
+            ],
+            "async": false
+        },
+        {
+            "task": "UnlockManifoldsTask",
+            "duration": [
+                5.2,
+                7.0
+            ],
+            "locations": [
+                "reactor_switch"
+            ],
+            "async": false
+        }
+    ],
+    "3": [
+        {
+            "task": "FixWiring",
+            "duration": [
+                3.8,
+                5.4
+            ],
+            "locations": [
+                "admin_wiring",
+                "admin_wiring",
+                "cafeteria_wiring"
+            ],
+            "async": false
+        },
+        {
+            "task": "SwipeCardTask",
+            "duration": [
+                2.5,
+                7.0
+            ],
+            "locations": [
+                "admin_card_swipe"
+            ],
+            "async": false
+        },
+        {
+            "task": "InspectSample",
+            "duration": [
+                4.4,
+                4.4
+            ],
+            "locations": [
+                "medbay_inspector",
+                "medbay_inspector"
+            ],
+            "async": true
+        },
+        {
+            "task": "MedScanTask",
+            "duration": [
+                10.0,
+                10.0
+            ],
+            "locations": [
+                "medbay_scanner"
+            ],
+            "async": false
+        },
+        {
+            "task": "AlignEnginesTask",
+            "duration": [
+                1.5,
+                3.0
+            ],
+            "locations": [
+                "upper_engine_align"
+            ],
+            "async": false
+        },
+        {
+            "task": "DivertCommsPower",
+            "duration": [
+                0.1,
+                1.0
+            ],
+            "locations": [
+                "electrical_diverter",
+                "communications_accept_power"
+            ],
+            "async": false
+        },
+        {
             "task": "UploadWeapons",
             "duration": [
                 8.9,
@@ -316,6 +434,17 @@
             "locations": [
                 "weapons_data_download",
                 "admin_data_download"
+            ],
+            "async": false
+        },
+        {
+            "task": "CleanO2Filter",
+            "duration": [
+                6.9,
+                9.0
+            ],
+            "locations": [
+                "o2_filter"
             ],
             "async": false
         },
@@ -340,20 +469,22 @@
                 "navigation_chart_course"
             ],
             "async": false
-        },
-        {
-            "task": "VentCleaning",
-            "duration": [
-                2.5,
-                4.0
-            ],
-            "locations": [
-                "weapons_vent"
-            ],
-            "async": false
         }
     ],
-    "3": [
+    "4": [
+        {
+            "task": "FixWiring",
+            "duration": [
+                3.8,
+                5.4
+            ],
+            "locations": [
+                "storage_wiring",
+                "navigation_wiring",
+                "electrical_wiring"
+            ],
+            "async": false
+        },
         {
             "task": "SwipeCardTask",
             "duration": [
@@ -366,40 +497,18 @@
             "async": false
         },
         {
-            "task": "FixWiring",
+            "task": "RefuelTask",
             "duration": [
-                3.8,
-                5.4
+                4.3,
+                4.3
             ],
             "locations": [
-                "storage_wiring",
-                "security_wiring",
-                "security_wiring"
+                "storage_fuel",
+                "upper_engine_refuel",
+                "storage_fuel",
+                "lower_engine_refuel"
             ],
             "async": false
-        },
-        {
-            "task": "AlignEnginesTask",
-            "duration": [
-                1.5,
-                3.0
-            ],
-            "locations": [
-                "upper_engine_align"
-            ],
-            "async": false
-        },
-        {
-            "task": "InspectSample",
-            "duration": [
-                4.4,
-                4.4
-            ],
-            "locations": [
-                "medbay_inspector",
-                "medbay_inspector"
-            ],
-            "async": true
         },
         {
             "task": "EmptyFilterChute",
@@ -414,25 +523,24 @@
             "async": false
         },
         {
-            "task": "DivertLifeSuppPower",
+            "task": "StartReactorTask",
             "duration": [
-                0.1,
-                1.0
+                17.5,
+                30.0
             ],
             "locations": [
-                "electrical_diverter",
-                "o2_accept_power"
+                "reactor_main"
             ],
             "async": false
         },
         {
-            "task": "UnlockManifoldsTask",
+            "task": "VentCleaning",
             "duration": [
-                5.2,
-                7.0
+                2.5,
+                4.0
             ],
             "locations": [
-                "reactor_switch"
+                "medbay_vent"
             ],
             "async": false
         },
@@ -445,88 +553,6 @@
             "locations": [
                 "communications_data_download",
                 "admin_data_download"
-            ],
-            "async": false
-        },
-        {
-            "task": "CleanO2Filter",
-            "duration": [
-                6.9,
-                9.0
-            ],
-            "locations": [
-                "o2_filter"
-            ],
-            "async": false
-        },
-        {
-            "task": "PrimeShieldsTask",
-            "duration": [
-                2.0,
-                4.0
-            ],
-            "locations": [
-                "shields_prime"
-            ],
-            "async": false
-        }
-    ],
-    "4": [
-        {
-            "task": "SwipeCardTask",
-            "duration": [
-                2.5,
-                7.0
-            ],
-            "locations": [
-                "admin_card_swipe"
-            ],
-            "async": false
-        },
-        {
-            "task": "FixWiring",
-            "duration": [
-                3.8,
-                5.4
-            ],
-            "locations": [
-                "storage_wiring",
-                "electrical_wiring",
-                "cafeteria_wiring"
-            ],
-            "async": false
-        },
-        {
-            "task": "EmptyGarbage",
-            "duration": [
-                4.7,
-                4.7
-            ],
-            "locations": [
-                "cafeteria_garbage",
-                "storage_garbage"
-            ],
-            "async": false
-        },
-        {
-            "task": "MedScanTask",
-            "duration": [
-                10.0,
-                10.0
-            ],
-            "locations": [
-                "medbay_scanner"
-            ],
-            "async": false
-        },
-        {
-            "task": "StartReactorTask",
-            "duration": [
-                17.5,
-                30.0
-            ],
-            "locations": [
-                "reactor_main"
             ],
             "async": false
         },
@@ -561,28 +587,6 @@
             ],
             "locations": [
                 "o2_filter"
-            ],
-            "async": false
-        },
-        {
-            "task": "PrimeShieldsTask",
-            "duration": [
-                2.0,
-                4.0
-            ],
-            "locations": [
-                "shields_prime"
-            ],
-            "async": false
-        },
-        {
-            "task": "UnlockManifoldsTask",
-            "duration": [
-                5.2,
-                7.0
-            ],
-            "locations": [
-                "reactor_switch"
             ],
             "async": false
         }

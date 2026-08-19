@@ -35,6 +35,7 @@ namespace Amogus
                 if (victim == null || victim.Data.IsDead)
                 {
                     Plugin.ActiveHunts.TryRemove(botId, out _);
+                    return;
                 }
 
                 float distance = Vector2.Distance(__instance.transform.position, victim.transform.position);

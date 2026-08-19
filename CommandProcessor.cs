@@ -73,6 +73,51 @@ namespace Amogus
                         SabotageProcessor.ProcessCommand(cmd);
                     });
                     break;
+                case "chat":
+                    WebSocketManager.MainThreadQueue.Enqueue(() =>
+                    {
+                        PlayerControl bot = Plugin.IDToBot(cmd.bot_id);
+                        if (bot == null) return;
+
+                        if (HudManager.Instance?.Chat != null)
+                        {
+                            HudManager.Instance.Chat.AddChat(bot, cmd.message);
+                            
+                            if (MeetingHud.Instance != null && !HudManager.Instance.Chat.IsOpenOrOpening)
+                            {
+                                HudManager.Instance.Chat.Toggle();
+                            }
+
+                            Plugin.Instance.Log.LogInfo($"Bot {cmd.bot_id} sent a message");
+                        }
+                    });
+                    break;
+                case "vote":
+                    WebSocketManager.MainThreadQueue.Enqueue(() =>
+                    {
+                        PlayerControl bot = Plugin.IDToBot(cmd.bot_id);
+                        if (bot == null || bot.Data.IsDead || MeetingHud.Instance == null) return;
+
+                        byte voteTarget = cmd.target_id == 15 ? (byte)253 : cmd.target_id;
+
+                        MeetingHud.Instance.CmdCastVote(cmd.bot_id, voteTarget);
+
+                    });
+                    break;
+                case "proceed":
+                    WebSocketManager.MainThreadQueue.Enqueue(() =>
+                    {
+                        if (MeetingHud.Instance == null) return;
+
+                        if (HudManager.Instance.Chat.IsOpenOrOpening)
+                        {
+                            HudManager.Instance.Chat.Toggle();
+                        }
+
+                        MeetingHud.Instance.HandleProceed();
+                        Plugin.Instance.Log.LogInfo($"Concluding meeting");
+                    });
+                    break;
                 default:
                     Plugin.Instance.Log.LogWarning($"Unknown command: {cmd.action}");
                     break;

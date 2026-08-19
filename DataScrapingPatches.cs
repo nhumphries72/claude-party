@@ -49,24 +49,4 @@ namespace Amogus
             }
         }
     }
-
-    [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.Awake))]
-    public static class EnumDumperPatch
-    {
-        public static void Postfix()
-        {
-            Plugin.Instance.Log.LogInfo("--- Dumping all tasks ---");
-            foreach (var task in Enum.GetValues(typeof(TaskTypes)))
-            {
-                Plugin.Instance.Log.LogInfo(task.ToString());
-            }
-
-            Plugin.Instance.Log.LogInfo("--- Dumping all rooms ---");
-            foreach (var room in Enum.GetValues(typeof(SystemTypes)))
-            {
-                Plugin.Instance.Log.LogInfo(room.ToString());
-            }
-        }
-    }
-
 }

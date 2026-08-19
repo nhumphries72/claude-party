@@ -37,6 +37,9 @@
     <Reference Include="UnityEngine.IMGUIModule">
       <HintPath>$(GameDir)\BepInEx\interop\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
+    <Reference Include="Hazel">
+      <HintPath>$(GameDir)\BepInEx\interop\Hazel.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <Target Name="CopyToPlugins" AfterTargets="Build">

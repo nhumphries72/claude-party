@@ -9,6 +9,7 @@
       "Amogus/1.0.0": {
         "dependencies": {
           "Assembly-CSharp": "0.0.0.0",
+          "Hazel": "1.0.0.0",
           "Il2Cppmscorlib": "4.0.0.0",
           "UnityEngine.CoreModule": "0.0.0.0",
           "UnityEngine.IMGUIModule": "0.0.0.0",
@@ -23,6 +24,14 @@
         "runtime": {
           "Assembly-CSharp.dll": {
             "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "Hazel/1.0.0.0": {
+        "runtime": {
+          "Hazel.dll": {
+            "assemblyVersion": "1.0.0.0",
             "fileVersion": "0.0.0.0"
           }
         }
@@ -111,14 +120,6 @@
         "runtime": {
           "UnityEngine.ParticleSystemModule.dll": {
             "assemblyVersion": "0.0.0.0",
-            "fileVersion": "0.0.0.0"
-          }
-        }
-      },
-      "Hazel/1.0.0.0": {
-        "runtime": {
-          "Hazel.dll": {
-            "assemblyVersion": "1.0.0.0",
             "fileVersion": "0.0.0.0"
           }
         }
@@ -448,6 +449,11 @@
       "serviceable": false,
       "sha512": ""
     },
+    "Hazel/1.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
     "Il2Cppmscorlib/4.0.0.0": {
       "type": "reference",
       "serviceable": false,
@@ -499,11 +505,6 @@
       "sha512": ""
     },
     "UnityEngine.ParticleSystemModule/0.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "Hazel/1.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

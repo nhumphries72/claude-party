@@ -2,6 +2,7 @@ import json
 import asyncio
 import random
 import time
+import sabotage_functions
 from navigator import Navigator
 
 with open("map_nodes.json", 'r') as node_map: NODE_MAP = json.load(node_map).get("nodes")
@@ -12,6 +13,7 @@ def interrupt_bot(bot_ids, context):
     active_actions = context.get('active_actions')
     active_connection = context.get('active_connection')
     
+    if bot_ids == 'all': bot_ids = range(0, 15)
     if not isinstance(bot_ids, list): bot_ids = [bot_ids]
     
     for bot in bot_ids:
@@ -31,7 +33,12 @@ async def execute_command(cmd, parts, context):
         "meeting": call_meeting,
         "kill": kill_target,
         "roles": print_roles,
-        "report": report_body
+        "report": report_body,
+        "sabotage": execute_sabotage,
+        "fix": fix_sabotage,
+        "chat": chat,
+        "vote": vote,
+        "proceed": proceed
     }
     function = cmd_dict.get(cmd)
     
@@ -246,9 +253,10 @@ async def run_hunt_sequence(imposter_id, victim_id, context):
                 await traverse_path(imposter_id, victim_node)
     except asyncio.CancelledError:
         print(f"Bot {imposter_id}'s hunt was interrupted")
-        raise 
+        raise
     finally:
-        if imposter_id in active_actions: del active_actions[imposter_id]
+        if imposter_id in active_actions:
+            del active_actions[imposter_id]
         
 async def print_roles(parts, context):
     bots = context.get('bots')
@@ -264,5 +272,53 @@ async def report_body(parts, context):
         "type": "command",
         "action": "report",
         "bot_id": bot_id
+    }
+    await active_connection.send(json.dumps(payload))
+    interrupt_bot('all', context)
+    
+async def execute_sabotage(parts, context):
+    interrupt_bot(parts[0], context)
+    await sabotage_functions.begin(parts, context)
+    
+async def fix_sabotage(parts, context):
+    interrupt_bot(parts[0], context)
+    await sabotage_functions.fix(parts, context)
+    
+async def chat(parts, context):
+    active_connection = context.get('active_connection')
+    
+    bot_id = int(parts[0])
+    message = " ".join(parts[1:])
+    
+    payload = {
+        "type": "command",
+        "action": "chat",
+        "bot_id": bot_id,
+        "message": message
+    }
+    await active_connection.send(json.dumps(payload))
+    print(f"Bot {bot_id} sent a message")
+    
+async def vote(parts, context):
+    active_connection = context.get('active_connection')
+    
+    bot_id = int(parts[0])
+    target_id = int(parts[1])
+    
+    payload = {
+        "type": "command",
+        "action": "vote",
+        "bot_id": bot_id,
+        "target_id": target_id
+    }
+    await active_connection.send(json.dumps(payload))
+    print(f"Bot {bot_id} voted for bot {target_id}")
+    
+async def proceed(parts, context):
+    active_connection = context.get('active_connection')
+    
+    payload = {
+        "type": "command",
+        "action": "proceed"
     }
     await active_connection.send(json.dumps(payload))

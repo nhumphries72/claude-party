@@ -64,3 +64,4 @@ S:\Projects\Amogus\obj\Debug\net6.0\Amogus.dll
 S:\Projects\Amogus\obj\Debug\net6.0\refint\Amogus.dll
 S:\Projects\Amogus\obj\Debug\net6.0\Amogus.pdb
 S:\Projects\Amogus\obj\Debug\net6.0\ref\Amogus.dll
+S:\Projects\Amogus\obj\Debug\net6.0\Amogus.sourcelink.json

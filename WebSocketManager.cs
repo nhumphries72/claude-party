@@ -22,6 +22,8 @@ namespace Amogus
         public string sub_action {get; set;}
         public string system {get; set;}
         public string panel {get; set;}
+        public string room {get; set;}
+        public string message {get; set;}
     }
 
     [Serializable]
