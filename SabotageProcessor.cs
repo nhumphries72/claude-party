@@ -88,6 +88,8 @@ namespace Amogus
                             ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Comms, (byte)0);
                         break;
                     }
+                    payload = $"{{\"type\": \"event\", \"event_type\": \"fix_successful\", \"bot_id\": {cmd.bot_id}, \"system\": \"{cmd.system}\", \"panel\": \"{cmd.panel}\"}}";
+                    WebSocketManager.Send(payload);
                 break;
             }
         }

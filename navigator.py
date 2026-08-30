@@ -10,6 +10,7 @@ class Navigator:
         self.nodes = self.graph_data['nodes']
         self.edges = self.graph_data['edges']
         self.vent_edges = self.graph_data['vent_edges']
+        self.rooms = self.graph_data['room_nodes']
         
     def _euclidean_distance(self, node_a, node_b):
         x1, y1 = self.nodes[node_a]['x'], self.nodes[node_a]['y']

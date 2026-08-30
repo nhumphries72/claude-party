@@ -44,6 +44,7 @@ namespace Amogus
                 if (distance <= killRadius)
                 {
                     imposter.RpcMurderPlayer(victim, true);
+                    BotVision.WitnessCrime(imposter, "kill", targetId);
                     Plugin.ActiveHunts.TryRemove(botId, out _);
                     rb.velocity = Vector2.zero;
 

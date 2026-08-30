@@ -1,1 +1,6 @@
-Amogus.rep
+__pycache__/
+bin/
+obj/
+*.dll
+*.gpr
+*.rep

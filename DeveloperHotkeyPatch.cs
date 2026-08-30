@@ -188,57 +188,15 @@ namespace Amogus
 
             if (Input.GetKeyDown(KeyCode.F10))
             {
-                isCircling = !isCircling;
-                Plugin.Instance.Log.LogInfo($"Movement test: {isCircling}");
-
-                if (!isCircling && PlayerControl.AllPlayerControls != null)
+                WebSocketManager.MainThreadQueue.Enqueue(() =>
                 {
-                    foreach (var player in PlayerControl.AllPlayerControls)
+                    if (ShipStatus.Instance == null) return;
+
+                    foreach (Vent vent in ShipStatus.Instance.AllVents)
                     {
-                        if (player != null)
-                        {
-                            var body = player.GetComponent<Rigidbody2D>();
-                            body?.velocity = Vector2.zero;
-                        }
+                        Plugin.Instance.Log.LogInfo($"GameObject: {vent.gameObject.name} | Id: {vent.Id}");
                     }
-                }
-            }
-
-            if (isCircling && ShipStatus.Instance != null && PlayerControl.AllPlayerControls != null)
-            {
-                circleTimer += Time.deltaTime;
-
-                int botCount = 0;
-                foreach (var p in PlayerControl.AllPlayerControls)
-                {
-                    if (p != null) botCount++;
-                }
-
-                if (botCount > 0)
-                {
-                    int botIndex = 0;
-                    float radius = 2.5f;
-                    float orbitSpeed = 2.0f;
-
-                    foreach (var player in PlayerControl.AllPlayerControls)
-                    {
-                        if (player != null)
-                        {
-                            float angle = (circleTimer * orbitSpeed) + (botIndex * (Mathf.PI * 2f / botCount));
-                            Vector2 targetPos = new(
-                                PlayerControl.LocalPlayer.transform.position.x + Mathf.Cos(angle) * radius,
-                                PlayerControl.LocalPlayer.transform.position.y + Mathf.Sin(angle) * radius
-                            );
-
-                            Vector2 currentPos = player.transform.position;
-                            Vector2 direction = targetPos - currentPos;
-
-                            var body = player.GetComponent<Rigidbody2D>();
-                            body?.velocity = direction * 10f;
-                        }
-                        botIndex++;
-                    }
-                }
+                });
             }
         }
     }

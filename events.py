@@ -1,6 +1,6 @@
 import time
 import asyncio
-from sabotage_functions import lock_doors
+from cli_subfunctions import lock_doors
 from cli_functions import interrupt_bot
 
 def handle_events(event_context):

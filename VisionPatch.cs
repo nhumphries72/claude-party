@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using HarmonyLib;
 
 namespace Amogus
 {
@@ -12,7 +11,23 @@ namespace Amogus
 
     public static class BotVision
     {
-        public static VisionContainer GetVisibleEntitites(PlayerControl bot)
+        public static void WitnessCrime(PlayerControl imposter, string actionType, int targetId = 15)
+        {
+            foreach (var witness in PlayerControl.AllPlayerControls)
+            {
+                if (witness.PlayerId == imposter.PlayerId || witness.Data.IsDead) continue;
+
+                VisionContainer vision = GetVisibleEntitites(witness);
+
+                if (vision.VisiblePlayers.Contains(imposter))
+                {
+                    string target = targetId != 15 ? $", \"target_id\": {targetId}": "";
+                    string payload = $"{{\"type\": \"event\", \"event_type\": \"witness\", \"witness_id\": {witness.PlayerId}, \"imposter_id\": {imposter.PlayerId}, \"action\": {actionType}{target}}}";
+                    WebSocketManager.Send(payload);
+                }
+            }
+        }
+        public static VisionContainer GetVisibleEntitites(PlayerControl bot, DeadBody[] allCorpses = null)
         {
             VisionContainer report = new();
 
@@ -61,16 +76,18 @@ namespace Amogus
                 }
             }
 
-            DeadBody[] corpses = Object.FindObjectsOfType<DeadBody>();
-            foreach (var body in corpses)
+            if (allCorpses != null)
             {
-                float dist = Vector2.Distance(botPos, body.transform.position);
-                if (dist <= sightRadius)
+                foreach (var body in allCorpses)
                 {
-                    RaycastHit2D hit = Physics2D.Linecast(botPos, body.transform.position, wallMask);
-                    if (hit.collider == null)
+                    float dist = Vector2.Distance(botPos, body.transform.position);
+                    if (dist <= sightRadius)
                     {
-                        report.VisibleCorpses.Add(body);
+                        RaycastHit2D hit = Physics2D.Linecast(botPos, body.transform.position, wallMask);
+                        if (hit.collider == null)
+                        {
+                            report.VisibleCorpses.Add(body);
+                        }
                     }
                 }
             }

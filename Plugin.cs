@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Text;
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
@@ -84,6 +85,10 @@ namespace Amogus
         private const float TargetInterval = 0.1f;
         private bool eventLock = false;
 
+        private readonly StringBuilder telemetryBuilder = new(1024);
+
+        private readonly Dictionary<byte, HashSet<int>> previousVisibleCorpses = [];
+
         public TelemetryComponent(IntPtr ptr): base(ptr) { }
 
         public void Start()
@@ -135,40 +140,55 @@ namespace Amogus
 
         private void ProcessTelemetry()
         {
-            if (AmongUsClient.Instance == null)
-            {
-                Plugin.Instance.Log.LogInfo("[DEBUG] Aborting: AmongUsClient.Instance is null");
-            }
-
-            if (PlayerControl.AllPlayerControls == null)
-            {
-                Plugin.Instance.Log.LogInfo("[DEBUG] Aborting: AllPlayerControls is null");
-            }
-            
-
             if (AmongUsClient.Instance == null || PlayerControl.AllPlayerControls == null) return;
-
+            
             try
             {
-                string payloadStr = "{\"type\": \"telemetry\", \"players\": {";
+                telemetryBuilder.Clear();
+                telemetryBuilder.Append("{\"type\": \"telemetry\", \"players\": {");
+
                 bool first = true;
+
+                DeadBody[] allCorpses = FindObjectsOfType<DeadBody>();
 
                 foreach (var player in PlayerControl.AllPlayerControls)
                 {
                     if (player == null || player.Data == null) continue;
-                    if (!first) payloadStr += ",";
+                    if (!first) telemetryBuilder.Append(',');
 
+                    byte botId = player.PlayerId;
                     var pos = player.transform.position;
                     string roomName = Plugin.GetRoomName(pos);
                     string isImposter = player.Data.Role.IsImpostor ? "true": "false";
                     string alive = player.Data.IsDead ? "false": "true";
 
-                    payloadStr += $"\"{player.PlayerId}\": {{\"x\": {pos.x:F2}, \"y\": {pos.y:F2}, \"room\": \"{roomName}\", \"imposter\": {isImposter}, \"alive\": {alive}}}";
+                    telemetryBuilder.Append($"\"{botId}\": {{\"x\": {pos.x:F2}, \"y\": {pos.y:F2}, \"room\": \"{roomName}\", \"imposter\": {isImposter}, \"alive\": {alive}}}");
                     first = false;
-                }
-                payloadStr += "}}";
 
-                WebSocketManager.Send(payloadStr);
+                    if (!player.Data.IsDead && !previousVisibleCorpses.ContainsKey(botId))
+                    {
+                        previousVisibleCorpses[botId] = [];
+                    }
+
+                    HashSet<int> currentlyVisible = [];
+                    VisionContainer vision = BotVision.GetVisibleEntitites(player, allCorpses);
+
+                    foreach (DeadBody body in vision.VisibleCorpses)
+                    {
+                        int bodyInstanceId = body.GetInstanceID();
+                        currentlyVisible.Add(bodyInstanceId);
+
+                        if (!previousVisibleCorpses[botId].Contains(bodyInstanceId))
+                        {
+                            string payload = $"{{\"type\": \"event\", \"event_type\": \"corpse_spotted\", \"bot_id\": {botId}, \"corpse_id\": {body.ParentId}}}";
+                            WebSocketManager.Send(payload);
+                        }
+                    }
+                    previousVisibleCorpses[botId] = currentlyVisible;
+                }
+                telemetryBuilder.Append("}}");
+
+                WebSocketManager.Send(telemetryBuilder.ToString());
             }
             catch (Exception e)
             {

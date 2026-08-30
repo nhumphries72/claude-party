@@ -1,6 +1,17 @@
 {
     "0": [
         {
+            "task": "SwipeCardTask",
+            "duration": [
+                2.5,
+                7.0
+            ],
+            "locations": [
+                "admin_card_swipe"
+            ],
+            "async": false
+        },
+        {
             "task": "FixWiring",
             "duration": [
                 3.8,
@@ -9,10 +20,106 @@
             "locations": [
                 "electrical_wiring",
                 "navigation_wiring",
-                "cafeteria_wiring"
+                "security_wiring"
             ],
             "async": false
         },
+        {
+            "task": "ClearAsteroids",
+            "duration": [
+                13.0,
+                20.0
+            ],
+            "locations": [
+                "weapons_asteroids"
+            ],
+            "async": false
+        },
+        {
+            "task": "EmptyGarbage",
+            "duration": [
+                4.7,
+                4.7
+            ],
+            "locations": [
+                "cafeteria_garbage",
+                "storage_garbage"
+            ],
+            "async": false
+        },
+        {
+            "task": "RefuelTask",
+            "duration": [
+                4.3,
+                4.3
+            ],
+            "locations": [
+                "storage_fuel",
+                "upper_engine_refuel",
+                "storage_fuel",
+                "lower_engine_refuel"
+            ],
+            "async": false
+        },
+        {
+            "task": "UploadWeapons",
+            "duration": [
+                8.9,
+                8.9
+            ],
+            "locations": [
+                "weapons_data_download",
+                "admin_data_download"
+            ],
+            "async": false
+        },
+        {
+            "task": "DivertWeaponPower",
+            "duration": [
+                0.1,
+                1.0
+            ],
+            "locations": [
+                "electrical_diverter",
+                "weapons_accept_power"
+            ],
+            "async": false
+        },
+        {
+            "task": "VentCleaning",
+            "duration": [
+                2.5,
+                4.0
+            ],
+            "locations": [
+                "admin_vent"
+            ],
+            "async": false
+        },
+        {
+            "task": "StabilizeSteeringTask",
+            "duration": [
+                0.1,
+                1.0
+            ],
+            "locations": [
+                "navigation_steering"
+            ],
+            "async": false
+        },
+        {
+            "task": "CalibrateDistributorTask",
+            "duration": [
+                4.0,
+                10.0
+            ],
+            "locations": [
+                "electrical_distributor"
+            ],
+            "async": false
+        }
+    ],
+    "1": [
         {
             "task": "SwipeCardTask",
             "duration": [
@@ -25,13 +132,15 @@
             "async": false
         },
         {
-            "task": "MedScanTask",
+            "task": "FixWiring",
             "duration": [
-                10.0,
-                10.0
+                3.8,
+                5.4
             ],
             "locations": [
-                "medbay_scanner"
+                "navigation_wiring",
+                "cafeteria_wiring",
+                "navigation_wiring"
             ],
             "async": false
         },
@@ -59,156 +168,13 @@
             "async": false
         },
         {
-            "task": "UploadWeapons",
+            "task": "StartReactorTask",
             "duration": [
-                8.9,
-                8.9
+                17.5,
+                30.0
             ],
             "locations": [
-                "weapons_data_download",
-                "admin_data_download"
-            ],
-            "async": false
-        },
-        {
-            "task": "DivertNavPower",
-            "duration": [
-                0.1,
-                1.0
-            ],
-            "locations": [
-                "electrical_diverter",
-                "navigation_accept_power"
-            ],
-            "async": false
-        },
-        {
-            "task": "UnlockManifoldsTask",
-            "duration": [
-                5.2,
-                7.0
-            ],
-            "locations": [
-                "reactor_switch"
-            ],
-            "async": false
-        },
-        {
-            "task": "ChartCourseTask",
-            "duration": [
-                2.0,
-                4.0
-            ],
-            "locations": [
-                "navigation_chart_course"
-            ],
-            "async": false
-        },
-        {
-            "task": "CleanO2Filter",
-            "duration": [
-                6.9,
-                9.0
-            ],
-            "locations": [
-                "o2_filter"
-            ],
-            "async": false
-        }
-    ],
-    "1": [
-        {
-            "task": "FixWiring",
-            "duration": [
-                3.8,
-                5.4
-            ],
-            "locations": [
-                "admin_wiring",
-                "navigation_wiring",
-                "security_wiring"
-            ],
-            "async": false
-        },
-        {
-            "task": "SwipeCardTask",
-            "duration": [
-                2.5,
-                7.0
-            ],
-            "locations": [
-                "admin_card_swipe"
-            ],
-            "async": false
-        },
-        {
-            "task": "ClearAsteroids",
-            "duration": [
-                13.0,
-                20.0
-            ],
-            "locations": [
-                "weapons_asteroids"
-            ],
-            "async": false
-        },
-        {
-            "task": "RefuelTask",
-            "duration": [
-                4.3,
-                4.3
-            ],
-            "locations": [
-                "storage_fuel",
-                "upper_engine_refuel",
-                "storage_fuel",
-                "lower_engine_refuel"
-            ],
-            "async": false
-        },
-        {
-            "task": "EmptyGarbage",
-            "duration": [
-                4.7,
-                4.7
-            ],
-            "locations": [
-                "cafeteria_garbage",
-                "storage_garbage"
-            ],
-            "async": false
-        },
-        {
-            "task": "VentCleaning",
-            "duration": [
-                2.5,
-                4.0
-            ],
-            "locations": [
-                "security_vent"
-            ],
-            "async": false
-        },
-        {
-            "task": "DivertCommsPower",
-            "duration": [
-                0.1,
-                1.0
-            ],
-            "locations": [
-                "electrical_diverter",
-                "communications_accept_power"
-            ],
-            "async": false
-        },
-        {
-            "task": "PrimeShieldsTask",
-            "duration": [
-                2.0,
-                4.0
-            ],
-            "locations": [
-                "shields_prime"
+                "reactor_main"
             ],
             "async": false
         },
@@ -225,31 +191,52 @@
             "async": false
         },
         {
-            "task": "StabilizeSteeringTask",
+            "task": "UnlockManifoldsTask",
+            "duration": [
+                5.2,
+                7.0
+            ],
+            "locations": [
+                "reactor_switch"
+            ],
+            "async": false
+        },
+        {
+            "task": "PrimeShieldsTask",
+            "duration": [
+                2.0,
+                4.0
+            ],
+            "locations": [
+                "shields_prime"
+            ],
+            "async": false
+        },
+        {
+            "task": "DivertShieldPower",
             "duration": [
                 0.1,
                 1.0
             ],
             "locations": [
-                "navigation_steering"
+                "electrical_diverter",
+                "shields_accept_power"
+            ],
+            "async": false
+        },
+        {
+            "task": "ChartCourseTask",
+            "duration": [
+                2.0,
+                4.0
+            ],
+            "locations": [
+                "navigation_chart_course"
             ],
             "async": false
         }
     ],
     "2": [
-        {
-            "task": "FixWiring",
-            "duration": [
-                3.8,
-                5.4
-            ],
-            "locations": [
-                "electrical_wiring",
-                "admin_wiring",
-                "navigation_wiring"
-            ],
-            "async": false
-        },
         {
             "task": "SwipeCardTask",
             "duration": [
@@ -258,6 +245,30 @@
             ],
             "locations": [
                 "admin_card_swipe"
+            ],
+            "async": false
+        },
+        {
+            "task": "FixWiring",
+            "duration": [
+                3.8,
+                5.4
+            ],
+            "locations": [
+                "electrical_wiring",
+                "storage_wiring",
+                "storage_wiring"
+            ],
+            "async": false
+        },
+        {
+            "task": "MedScanTask",
+            "duration": [
+                10.0,
+                10.0
+            ],
+            "locations": [
+                "medbay_scanner"
             ],
             "async": false
         },
@@ -274,17 +285,6 @@
             "async": true
         },
         {
-            "task": "StartReactorTask",
-            "duration": [
-                17.5,
-                30.0
-            ],
-            "locations": [
-                "reactor_main"
-            ],
-            "async": false
-        },
-        {
             "task": "EmptyGarbage",
             "duration": [
                 4.7,
@@ -297,14 +297,36 @@
             "async": false
         },
         {
-            "task": "DivertLeftEnginePower",
+            "task": "DivertSecurityPower",
             "duration": [
                 0.1,
                 1.0
             ],
             "locations": [
                 "electrical_diverter",
-                "upper_engine_accept_power"
+                "security_accept_power"
+            ],
+            "async": false
+        },
+        {
+            "task": "CleanO2Filter",
+            "duration": [
+                6.9,
+                9.0
+            ],
+            "locations": [
+                "o2_filter"
+            ],
+            "async": false
+        },
+        {
+            "task": "CalibrateDistributorTask",
+            "duration": [
+                4.0,
+                10.0
+            ],
+            "locations": [
+                "electrical_distributor"
             ],
             "async": false
         },
@@ -321,17 +343,6 @@
             "async": false
         },
         {
-            "task": "CalibrateDistributorTask",
-            "duration": [
-                4.0,
-                10.0
-            ],
-            "locations": [
-                "electrical_distributor"
-            ],
-            "async": false
-        },
-        {
             "task": "PrimeShieldsTask",
             "duration": [
                 2.0,
@@ -341,33 +352,9 @@
                 "shields_prime"
             ],
             "async": false
-        },
-        {
-            "task": "UnlockManifoldsTask",
-            "duration": [
-                5.2,
-                7.0
-            ],
-            "locations": [
-                "reactor_switch"
-            ],
-            "async": false
         }
     ],
     "3": [
-        {
-            "task": "FixWiring",
-            "duration": [
-                3.8,
-                5.4
-            ],
-            "locations": [
-                "admin_wiring",
-                "admin_wiring",
-                "cafeteria_wiring"
-            ],
-            "async": false
-        },
         {
             "task": "SwipeCardTask",
             "duration": [
@@ -376,6 +363,19 @@
             ],
             "locations": [
                 "admin_card_swipe"
+            ],
+            "async": false
+        },
+        {
+            "task": "FixWiring",
+            "duration": [
+                3.8,
+                5.4
+            ],
+            "locations": [
+                "admin_wiring",
+                "security_wiring",
+                "storage_wiring"
             ],
             "async": false
         },
@@ -392,24 +392,25 @@
             "async": true
         },
         {
-            "task": "MedScanTask",
+            "task": "ClearAsteroids",
             "duration": [
-                10.0,
-                10.0
+                13.0,
+                20.0
             ],
             "locations": [
-                "medbay_scanner"
+                "weapons_asteroids"
             ],
             "async": false
         },
         {
-            "task": "AlignEnginesTask",
+            "task": "EmptyFilterChute",
             "duration": [
-                1.5,
-                3.0
+                4.7,
+                4.7
             ],
             "locations": [
-                "upper_engine_align"
+                "o2_chute",
+                "storage_garbage"
             ],
             "async": false
         },
@@ -426,13 +427,13 @@
             "async": false
         },
         {
-            "task": "UploadWeapons",
+            "task": "UploadNav",
             "duration": [
                 8.9,
                 8.9
             ],
             "locations": [
-                "weapons_data_download",
+                "navigation_data_download",
                 "admin_data_download"
             ],
             "async": false
@@ -449,13 +450,13 @@
             "async": false
         },
         {
-            "task": "StabilizeSteeringTask",
+            "task": "UnlockManifoldsTask",
             "duration": [
-                0.1,
-                1.0
+                5.2,
+                7.0
             ],
             "locations": [
-                "navigation_steering"
+                "reactor_switch"
             ],
             "async": false
         },
@@ -473,19 +474,6 @@
     ],
     "4": [
         {
-            "task": "FixWiring",
-            "duration": [
-                3.8,
-                5.4
-            ],
-            "locations": [
-                "storage_wiring",
-                "navigation_wiring",
-                "electrical_wiring"
-            ],
-            "async": false
-        },
-        {
             "task": "SwipeCardTask",
             "duration": [
                 2.5,
@@ -493,6 +481,41 @@
             ],
             "locations": [
                 "admin_card_swipe"
+            ],
+            "async": false
+        },
+        {
+            "task": "FixWiring",
+            "duration": [
+                3.8,
+                5.4
+            ],
+            "locations": [
+                "storage_wiring",
+                "storage_wiring",
+                "electrical_wiring"
+            ],
+            "async": false
+        },
+        {
+            "task": "StartReactorTask",
+            "duration": [
+                17.5,
+                30.0
+            ],
+            "locations": [
+                "reactor_main"
+            ],
+            "async": false
+        },
+        {
+            "task": "MedScanTask",
+            "duration": [
+                10.0,
+                10.0
+            ],
+            "locations": [
+                "medbay_scanner"
             ],
             "async": false
         },
@@ -511,36 +534,25 @@
             "async": false
         },
         {
-            "task": "EmptyFilterChute",
+            "task": "StabilizeSteeringTask",
             "duration": [
-                4.7,
-                4.7
+                0.1,
+                1.0
             ],
             "locations": [
-                "o2_chute",
-                "storage_garbage"
+                "navigation_steering"
             ],
             "async": false
         },
         {
-            "task": "StartReactorTask",
+            "task": "DivertSecurityPower",
             "duration": [
-                17.5,
-                30.0
+                0.1,
+                1.0
             ],
             "locations": [
-                "reactor_main"
-            ],
-            "async": false
-        },
-        {
-            "task": "VentCleaning",
-            "duration": [
-                2.5,
-                4.0
-            ],
-            "locations": [
-                "medbay_vent"
+                "electrical_diverter",
+                "security_accept_power"
             ],
             "async": false
         },
@@ -557,36 +569,24 @@
             "async": false
         },
         {
-            "task": "CalibrateDistributorTask",
+            "task": "VentCleaning",
             "duration": [
-                4.0,
-                10.0
+                2.5,
+                4.0
             ],
             "locations": [
-                "electrical_distributor"
+                "weapons_vent"
             ],
             "async": false
         },
         {
-            "task": "DivertLeftEnginePower",
+            "task": "UnlockManifoldsTask",
             "duration": [
-                0.1,
-                1.0
+                5.2,
+                7.0
             ],
             "locations": [
-                "electrical_diverter",
-                "upper_engine_accept_power"
-            ],
-            "async": false
-        },
-        {
-            "task": "CleanO2Filter",
-            "duration": [
-                6.9,
-                9.0
-            ],
-            "locations": [
-                "o2_filter"
+                "reactor_switch"
             ],
             "async": false
         }

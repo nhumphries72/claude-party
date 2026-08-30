@@ -9,11 +9,11 @@ from events import handle_events
 
 active_connection = None
 nav = Navigator()
-with open("map_nodes.json", 'r') as node_map:
-    NODE_MAP = json.load(node_map).get("nodes")
+NODE_MAP = nav.nodes
+ROOM_NODES = nav.rooms
 with open("task_info.json", 'r') as task_info: TASK_INFO = json.load(task_info)
 
-bots, bot_arrival_events, active_actions, MASTER_TASKS = {}, {}, {}, {}
+bots, vents, bot_arrival_events, active_actions, MASTER_TASKS = {}, {}, {}, {}, {}
 cooldowns = { "kill": {}, "sabotage": {} }
 
 async def handle_game_state(websocket):
@@ -31,7 +31,7 @@ async def handle_game_state(websocket):
                 for id, info in players.items():
                     bots[int(id)] = {
                         'position': {"x": info['x'], "y": info['y']},
-                        'alive': info['alive']
+                        'alive': info['alive'],
                     }
                     bots[int(id)]['role'] = "imposter" if info['imposter'] else "crewmate"
             
@@ -76,6 +76,7 @@ async def handle_game_state(websocket):
                                 "locations": locations,
                                 "async": TASK_INFO[task_name]['async']
                             })
+                            vents[bot] = None
                     
                 with open("task_dump.json", "w") as f: json.dump(MASTER_TASKS, f, indent=4)
                 
@@ -149,7 +150,10 @@ async def cli():
             "bots": bots,
             "bot_arrival_events": bot_arrival_events,
             "cooldowns": cooldowns,
-            "navigator": nav
+            "navigator": nav,
+            "bots": bots,
+            "vents": vents,
+            "ROOM_NODES": ROOM_NODES
         }
         
         await execute_command(command, parts, context)

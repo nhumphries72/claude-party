@@ -344,7 +344,7 @@
             "x": -21.9,
             "y": -2.52
         },
-        "reactor_north": {
+        "reactor_north_vent": {
             "x": -21.32,
             "y": -2.53
         },
@@ -780,10 +780,10 @@
         ],
         [
             "reactor_main",
-            "reactor_north"
+            "reactor_north_vent"
         ],
         [
-            "reactor_north",
+            "reactor_north_vent",
             "reactor_switch"
         ],
         [
@@ -876,7 +876,7 @@
         ],
         [
             "reactor_sabotage_north",
-            "reactor_north"
+            "reactor_north_vent"
         ],
         [
             "reactor_main",
@@ -950,7 +950,7 @@
         ],
         [
             "upper_engine_vent",
-            "reactor_north"
+            "reactor_north_vent"
         ],
         [
             "reactor_south_vent",
@@ -990,7 +990,6 @@
         ],
         "LifeSupp":
         [
-            "o2_accept_power",
             "o2_chute",
             "o2_filter",
             "o2_main",
@@ -1004,8 +1003,7 @@
             "navigation_main",
             "navigation_steering",
             "navigation_vent_north",
-            "navigation_vent_south",
-            "navigation_wiring"
+            "navigation_vent_south"
         ],
         "Admin":
         [
@@ -1071,7 +1069,7 @@
         [
             "reactor_accept_power",
             "reactor_main",
-            "reactor_north",
+            "reactor_north_vent",
             "reactor_sabotage_north",
             "reactor_sabotage_south",
             "reactor_south_vent",
@@ -1084,8 +1082,7 @@
             "security_northeast",
             "security_south",
             "security_terminal",
-            "security_vent",
-            "security_wiring"
+            "security_vent"
         ],
         "UpperEngine":
         [
@@ -1116,7 +1113,10 @@
             "east_intersection_1",
             "east_intersection_2",
             "east_intersection_3",
-            "east_intersection_4"
+            "east_intersection_4",
+            "o2_accept_power",
+            "navigation_wiring",
+            "security_wiring"
         ]
     }
 }

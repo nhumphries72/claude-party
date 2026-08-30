@@ -111,7 +111,7 @@
           }
         }
       },
-      "BepInEx.Core/6.0.0-be.755": {
+      "BepInEx.Core/6.0.0-be.785": {
         "type": "package",
         "dependencies": {
           "HarmonyX": "2.10.2",
@@ -135,10 +135,10 @@
           "build/BepInEx.PluginInfoProps.props": {}
         }
       },
-      "BepInEx.Unity.Common/6.0.0-be.755": {
+      "BepInEx.Unity.Common/6.0.0-be.785": {
         "type": "package",
         "dependencies": {
-          "AssetRipper.Primitives": "3.1.3",
+          "AssetRipper.Primitives": "3.2.0",
           "MonoMod.Utils": "22.7.31.1"
         },
         "compile": {
@@ -152,16 +152,16 @@
           }
         }
       },
-      "BepInEx.Unity.IL2CPP/6.0.0-be.755": {
+      "BepInEx.Unity.IL2CPP/6.0.0-be.785": {
         "type": "package",
         "dependencies": {
-          "BepInEx.Core": "6.0.0-be.755",
-          "BepInEx.Unity.Common": "6.0.0-be.755",
+          "BepInEx.Core": "6.0.0-be.785",
+          "BepInEx.Unity.Common": "6.0.0-be.785",
           "HarmonyX": "2.10.2",
           "Iced": "1.21.0",
-          "Il2CppInterop.Generator": "1.5.1-ci.829",
-          "Il2CppInterop.HarmonySupport": "1.5.1-ci.829",
-          "Il2CppInterop.Runtime": "1.5.1-ci.829",
+          "Il2CppInterop.Generator": "1.5.3",
+          "Il2CppInterop.HarmonySupport": "1.5.3",
+          "Il2CppInterop.Runtime": "1.5.3",
           "MonoMod.RuntimeDetour": "22.7.31.1",
           "Samboy063.Cpp2IL.Core": "2022.1.0-development.1452"
         },
@@ -215,7 +215,7 @@
           }
         }
       },
-      "Il2CppInterop.Common/1.5.1-ci.829": {
+      "Il2CppInterop.Common/1.5.3": {
         "type": "package",
         "dependencies": {
           "Iced": "1.17.0",
@@ -233,11 +233,11 @@
           }
         }
       },
-      "Il2CppInterop.Generator/1.5.1-ci.829": {
+      "Il2CppInterop.Generator/1.5.3": {
         "type": "package",
         "dependencies": {
           "AsmResolver.DotNet": "6.0.0-beta.5",
-          "Il2CppInterop.Common": "1.5.1-ci.829",
+          "Il2CppInterop.Common": "1.5.3",
           "MonoMod.Backports": "1.1.2"
         },
         "compile": {
@@ -251,11 +251,11 @@
           }
         }
       },
-      "Il2CppInterop.HarmonySupport/1.5.1-ci.829": {
+      "Il2CppInterop.HarmonySupport/1.5.3": {
         "type": "package",
         "dependencies": {
           "HarmonyX": "2.10.0",
-          "Il2CppInterop.Runtime": "1.5.1-ci.829"
+          "Il2CppInterop.Runtime": "1.5.3"
         },
         "compile": {
           "lib/net6.0/Il2CppInterop.HarmonySupport.dll": {
@@ -268,11 +268,11 @@
           }
         }
       },
-      "Il2CppInterop.Runtime/1.5.1-ci.829": {
+      "Il2CppInterop.Runtime/1.5.3": {
         "type": "package",
         "dependencies": {
           "Iced": "1.17.0",
-          "Il2CppInterop.Common": "1.5.1-ci.829"
+          "Il2CppInterop.Common": "1.5.3"
         },
         "compile": {
           "lib/net6.0/Il2CppInterop.Runtime.dll": {
@@ -1630,13 +1630,13 @@
         "lib/netstandard2.0/AssetRipper.Primitives.xml"
       ]
     },
-    "BepInEx.Core/6.0.0-be.755": {
-      "sha512": "8u8f4vUF6529mOzuwf6n2wZIZV08YuFj8xHefWpwY/KZOFdJ4bJ3hx8wYbhAfOC5Fax6PO52ZVS0gDlt8Igutg==",
+    "BepInEx.Core/6.0.0-be.785": {
+      "sha512": "gJ59OLdTtyeStXxnemaVaUP8ZPJbOYM3cjX0gQhnjPeZ+0+ZuGZUZUMLqsTAsdC2+RrdmFDZSrQPo+bPKwVSdw==",
       "type": "package",
-      "path": "bepinex.core/6.0.0-be.755",
+      "path": "bepinex.core/6.0.0-be.785",
       "files": [
         ".nupkg.metadata",
-        "bepinex.core.6.0.0-be.755.nupkg.sha512",
+        "bepinex.core.6.0.0-be.785.nupkg.sha512",
         "bepinex.core.nuspec",
         "lib/net35/BepInEx.Core.dll",
         "lib/net35/BepInEx.Core.xml",
@@ -1656,13 +1656,13 @@
         "build/BepInEx.PluginInfoProps.props"
       ]
     },
-    "BepInEx.Unity.Common/6.0.0-be.755": {
-      "sha512": "KbPw6hNxD4ymVARSlTjeEjaOUBLzVoZAIYEen0A1AzmtADRUqwccy5ohg52G3oRqf+epzyBLFaVW9KOnUyPZYg==",
+    "BepInEx.Unity.Common/6.0.0-be.785": {
+      "sha512": "fedCVDpQLF9JresCZQEg3uCyTjD7UbCoQ1pPvxpGiUaGBHeL8Xqhze6mBnX1403n/xP34IHhLGFhsucVwNKbkQ==",
       "type": "package",
-      "path": "bepinex.unity.common/6.0.0-be.755",
+      "path": "bepinex.unity.common/6.0.0-be.785",
       "files": [
         ".nupkg.metadata",
-        "bepinex.unity.common.6.0.0-be.755.nupkg.sha512",
+        "bepinex.unity.common.6.0.0-be.785.nupkg.sha512",
         "bepinex.unity.common.nuspec",
         "lib/net35/BepInEx.Unity.Common.dll",
         "lib/net35/BepInEx.Unity.Common.xml",
@@ -1671,13 +1671,13 @@
         "logo.png"
       ]
     },
-    "BepInEx.Unity.IL2CPP/6.0.0-be.755": {
-      "sha512": "B6bnknQPLXm64gIL8+nj5R0O4JpnX3vj2cxqEnULMjqZJR1TqxSZ7Pj6kFXEXiJIF1kOZGWofg4kXHW7GE8skQ==",
+    "BepInEx.Unity.IL2CPP/6.0.0-be.785": {
+      "sha512": "uWv4T2MCp9pjt+BKy7+96qUccKrB9UUhOf06JDaTrl3vfnMox/v6YamJugT+UEafBSJCgYEOx+ciikiylMuQGw==",
       "type": "package",
-      "path": "bepinex.unity.il2cpp/6.0.0-be.755",
+      "path": "bepinex.unity.il2cpp/6.0.0-be.785",
       "files": [
         ".nupkg.metadata",
-        "bepinex.unity.il2cpp.6.0.0-be.755.nupkg.sha512",
+        "bepinex.unity.il2cpp.6.0.0-be.785.nupkg.sha512",
         "bepinex.unity.il2cpp.nuspec",
         "lib/net6.0/BepInEx.Unity.IL2CPP.dll",
         "lib/net6.0/BepInEx.Unity.IL2CPP.xml",
@@ -1734,28 +1734,30 @@
         "logo.png"
       ]
     },
-    "Il2CppInterop.Common/1.5.1-ci.829": {
-      "sha512": "tATowAc0TeJUMFi20aP1+Nh2HmHPU1XnWX3HRTx1C07uo/gcv6j32thgr08A5qLnE2e7LZ+g+kOpW9ACxEdKNg==",
+    "Il2CppInterop.Common/1.5.3": {
+      "sha512": "ziFbpzgXtqTvIwpfva9z3vlhjXrKYHfXDF5barssiFcc0YdFkQyT8FlIVQzDnycVdgPcKjzXD7goFaWddKg/KA==",
       "type": "package",
-      "path": "il2cppinterop.common/1.5.1-ci.829",
+      "path": "il2cppinterop.common/1.5.3",
       "files": [
         ".nupkg.metadata",
+        ".signature.p7s",
         "README.md",
-        "il2cppinterop.common.1.5.1-ci.829.nupkg.sha512",
+        "il2cppinterop.common.1.5.3.nupkg.sha512",
         "il2cppinterop.common.nuspec",
         "lib/netstandard2.0/Il2CppInterop.Common.dll",
         "lib/netstandard2.0/Il2CppInterop.Common.xml",
         "logo_icon.png"
       ]
     },
-    "Il2CppInterop.Generator/1.5.1-ci.829": {
-      "sha512": "ya1Aatz8IS2FIL5tAwlBhSdB6iGhMDZA3rCnK53ZwpS06sM79Wkt3GlTi+1B9jtUGcTEVTdi3QK/RwpubF9KEw==",
+    "Il2CppInterop.Generator/1.5.3": {
+      "sha512": "Mb8trdAAoJFV7bSGPKn1EYutVRsvbMu4GaumFoB0JEOcKDTcc6E0H06J/9bklQVc/N4GxoXxKOaoJg+cR3b4Wg==",
       "type": "package",
-      "path": "il2cppinterop.generator/1.5.1-ci.829",
+      "path": "il2cppinterop.generator/1.5.3",
       "files": [
         ".nupkg.metadata",
+        ".signature.p7s",
         "README.md",
-        "il2cppinterop.generator.1.5.1-ci.829.nupkg.sha512",
+        "il2cppinterop.generator.1.5.3.nupkg.sha512",
         "il2cppinterop.generator.nuspec",
         "lib/net472/Il2CppInterop.Generator.dll",
         "lib/net472/Il2CppInterop.Generator.xml",
@@ -1764,28 +1766,30 @@
         "logo_icon.png"
       ]
     },
-    "Il2CppInterop.HarmonySupport/1.5.1-ci.829": {
-      "sha512": "TZhJ3WnY3N11xywc9VrWu8MsUpeGZjebQ7Kv1nE2BKTXBikA9okSYlkxK0Bz+PSyYB9vWtsAY6F/XJhYwEsvWA==",
+    "Il2CppInterop.HarmonySupport/1.5.3": {
+      "sha512": "kap8a2rkCpKBenaHQAJqGofLOAOyBnHnlZmTMCEwlwFODXjNv+sQHmlfatl7OYvZXdoIJnZErlOl/8YEk67XaQ==",
       "type": "package",
-      "path": "il2cppinterop.harmonysupport/1.5.1-ci.829",
+      "path": "il2cppinterop.harmonysupport/1.5.3",
       "files": [
         ".nupkg.metadata",
+        ".signature.p7s",
         "README.md",
-        "il2cppinterop.harmonysupport.1.5.1-ci.829.nupkg.sha512",
+        "il2cppinterop.harmonysupport.1.5.3.nupkg.sha512",
         "il2cppinterop.harmonysupport.nuspec",
         "lib/net6.0/Il2CppInterop.HarmonySupport.dll",
         "lib/net6.0/Il2CppInterop.HarmonySupport.xml",
         "logo_icon.png"
       ]
     },
-    "Il2CppInterop.Runtime/1.5.1-ci.829": {
-      "sha512": "SHw30EU1u5JpdXqEtLYUKf6oyINvoPDwMEjkctpTBF5Zq+V6dANrhqNDEjljpXOiFvF8ZFx0UN4wNC/bIut7Yg==",
+    "Il2CppInterop.Runtime/1.5.3": {
+      "sha512": "kV7UJ9Ra7kHAmFguM2DcD8CBiqM2PYSAUqb/0OajgrAw8yJKxSFmzOjcu653ZMLJ+kVi0XXEO/+uwEspKGCbLQ==",
       "type": "package",
-      "path": "il2cppinterop.runtime/1.5.1-ci.829",
+      "path": "il2cppinterop.runtime/1.5.3",
       "files": [
         ".nupkg.metadata",
+        ".signature.p7s",
         "README.md",
-        "il2cppinterop.runtime.1.5.1-ci.829.nupkg.sha512",
+        "il2cppinterop.runtime.1.5.3.nupkg.sha512",
         "il2cppinterop.runtime.nuspec",
         "lib/net6.0/Il2CppInterop.Runtime.dll",
         "lib/net6.0/Il2CppInterop.Runtime.xml",
@@ -4662,11 +4666,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "S:\\Projects\\Amogus\\Amogus.csproj",
+      "projectUniqueName": "s:\\Projects\\Amogus\\Amogus.csproj",
       "projectName": "Amogus",
-      "projectPath": "S:\\Projects\\Amogus\\Amogus.csproj",
+      "projectPath": "s:\\Projects\\Amogus\\Amogus.csproj",
       "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-      "outputPath": "S:\\Projects\\Amogus\\obj\\",
+      "outputPath": "s:\\Projects\\Amogus\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config"

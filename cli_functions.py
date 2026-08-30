@@ -2,7 +2,7 @@ import json
 import asyncio
 import random
 import time
-import sabotage_functions
+import cli_subfunctions as sub
 from navigator import Navigator
 
 with open("map_nodes.json", 'r') as node_map: NODE_MAP = json.load(node_map).get("nodes")
@@ -38,7 +38,8 @@ async def execute_command(cmd, parts, context):
         "fix": fix_sabotage,
         "chat": chat,
         "vote": vote,
-        "proceed": proceed
+        "proceed": proceed,
+        "vent": vent
     }
     function = cmd_dict.get(cmd)
     
@@ -48,25 +49,37 @@ async def execute_command(cmd, parts, context):
         print("Unknown command")
 
 async def move(parts, context):
-    active_connection = context.get('active_connection')
     active_actions = context.get('active_actions')
-    if active_connection:
-        try:
-            bot_id = int(parts[0])
-            destination = str(parts[1])
-            
-            if destination not in NODE_MAP:
-                print(f"Node: '{destination}' not found")
-                return
-                
-            interrupt_bot(bot_id, context)
-            active_actions[bot_id] = asyncio.create_task(run_move_sequence(bot_id, destination, context))
-        
-        except ValueError:
-            print("Bot ID must be an integer")
+    bots = context.get('bots')
+    ROOM_NODES = context.get('ROOM_NODES')
     
-    else:
-        print("Cannot send command; Unity is not connected")
+    bot_id = int(parts[0])
+    room_name = parts[1]
+    
+    room_key = next((k for k in ROOM_NODES.keys() if k.lower() == room_name.lower()), None)
+    
+    if not room_key:
+        print(f"Room '{room_name}' not found")
+        return
+    
+    target_nodes = ROOM_NODES[room_key]
+    bot_pos = bots[bot_id]['position']
+    current_node = nav.find_nearest_node(bot_pos['x'], bot_pos['y'])
+    
+    shortest_path = None
+    best_node = None
+    
+    for node in target_nodes:
+        path = nav.find_path(current_node, node)
+        if path:
+            if shortest_path is None or len(path) < len(shortest_path):
+                shortest_path = path
+                best_node = node
+                
+    if best_node:
+        interrupt_bot(bot_id, context)
+        print(f"Bot {bot_id} moving to {best_node}")
+        active_actions[bot_id] = asyncio.create_task(run_move_sequence(bot_id, best_node, context))
         
 async def run_move_sequence(bot_id, destination, context):
     traverse_path = context.get('traverse_path')
@@ -278,11 +291,11 @@ async def report_body(parts, context):
     
 async def execute_sabotage(parts, context):
     interrupt_bot(parts[0], context)
-    await sabotage_functions.begin(parts, context)
+    await sub.begin(parts, context)
     
 async def fix_sabotage(parts, context):
     interrupt_bot(parts[0], context)
-    await sabotage_functions.fix(parts, context)
+    await sub.fix(parts, context)
     
 async def chat(parts, context):
     active_connection = context.get('active_connection')
@@ -322,3 +335,12 @@ async def proceed(parts, context):
         "action": "proceed"
     }
     await active_connection.send(json.dumps(payload))
+
+async def vent(parts, context):
+    vent_commands = {
+        "enter": sub.enter_vent,
+        "move": sub.vent_move,
+        "exit": sub.exit_vent
+    }
+    subcommand = vent_commands[parts[1]]
+    await subcommand(parts, context)

@@ -24,6 +24,7 @@ namespace Amogus
         public string panel {get; set;}
         public string room {get; set;}
         public string message {get; set;}
+        public int vent_id {get; set;}
     }
 
     [Serializable]
