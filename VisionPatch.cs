@@ -22,7 +22,7 @@ namespace Amogus
                 if (vision.VisiblePlayers.Contains(imposter))
                 {
                     string target = targetId != 15 ? $", \"target_id\": {targetId}": "";
-                    string payload = $"{{\"type\": \"event\", \"event_type\": \"witness\", \"witness_id\": {witness.PlayerId}, \"imposter_id\": {imposter.PlayerId}, \"action\": {actionType}{target}}}";
+                    string payload = $"{{\"type\": \"event\", \"event_type\": \"witness\", \"bot_id\": {witness.PlayerId}, \"imposter_id\": {imposter.PlayerId}, \"action\": {actionType}{target}}}";
                     WebSocketManager.Send(payload);
                 }
             }

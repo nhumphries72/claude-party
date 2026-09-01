@@ -4,6 +4,7 @@ import json
 import time
 import random
 from navigator import Navigator
+from meeting_manager import MeetingManager
 from cli_functions import execute_command
 from events import handle_events
 
@@ -15,6 +16,7 @@ with open("task_info.json", 'r') as task_info: TASK_INFO = json.load(task_info)
 
 bots, vents, bot_arrival_events, active_actions, MASTER_TASKS = {}, {}, {}, {}, {}
 cooldowns = { "kill": {}, "sabotage": {} }
+manager = MeetingManager(active_connection, bots, active_actions, bot_arrival_events)
 
 async def handle_game_state(websocket):
     global active_connection, MASTER_TASKS
@@ -41,7 +43,8 @@ async def handle_game_state(websocket):
                     "bot_arrival_events": bot_arrival_events,
                     "active_actions": active_actions,
                     "cooldowns": cooldowns,
-                    "navigator": nav
+                    "navigator": nav,
+                    "manager": manager
                 }
                 handle_events(event_context)
                 
