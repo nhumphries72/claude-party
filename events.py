@@ -1,49 +1,79 @@
 import time
 import asyncio
 from cli_subfunctions import lock_doors
-from cli_functions import interrupt_bot
 
+def _handle_arrived(bot_id, data, ctx):
+    if bot_id in ctx['bot_arrival_events']: 
+        ctx['bot_arrival_events'][bot_id].set()
+    room = ctx['find_current_room'](bot_id)
+    ctx['bot_memories'][bot_id].append(f"Arrived at {room}")
+
+def _handle_kill_complete(bot_id, data, ctx):
+    target_id = data.get('target_id')
+    print(f"Bot {target_id} was murdered by bot {bot_id}")
+    
+    if bot_id in ctx['active_actions']: 
+        del ctx['active_actions'][bot_id]
+        
+    ctx['cooldowns']['kill'][bot_id] = time.time() + 45
+    ctx['bot_memories'][bot_id].append(f"Killed {target_id}")
+    ctx['bot_memories'][target_id].append(f"Bot {bot_id} killed you")
+
+def _handle_meeting_trigger(bot_id, data, ctx):
+    event = data.get("event_type")
+    victim_id = data.get("victim_id") if event == "report" else None
+    
+    asyncio.create_task(ctx['manager'].start_meeting(bot_id, victim_id))
+    
+    if event == "emergency_meeting":
+        ctx['bot_memories'][bot_id].append("Called an emergency meeting")
+    else:
+        ctx['bot_memories'][bot_id].append(f"Reported bot {victim_id}'s body")
+
+def _handle_sabotage(bot_id, data, ctx):
+    system, room = data.get('system'), data.get('room')
+    print(f"Bot {bot_id} sabotaged {system}")
+    ctx['cooldowns']['sabotage'][bot_id] = time.time() + 30
+    
+    if system == "doors" and room != "none":
+        asyncio.create_task(lock_doors(room, ctx['navigator']))
+        
+    ctx['bot_memories'][bot_id].append(f"Sabotaged the {system} system")
+    
+def _handle_task(bot_id, data, ctx):
+    print(f"Bot {bot_id} completed {data.get('task_name')}")
+    ctx['bot_memories'][bot_id].append(f"Finished task {data.get('task_name')}")
+    
+def _handle_corpse_spotted(bot_id, data, ctx):
+    ctx['bot_memories'][bot_id].append(f"Spotted bot {data.get('corpse_id')}'s body")
+    
+def _handle_witness(bot_id, data, ctx):
+    ctx['bot_memories'][bot_id].append(f"Witnessed bot {data.get('imposter_id')} {data.get('action')}")
+    
+def _handle_vent(bot_id, data, ctx):
+    ctx['bot_memories'][bot_id].append(f"Traveled to {ctx['find_current_room'](bot_id)} through a vent")
+    
 def handle_events(event_context):
     data = event_context.get('data')
-    bot_arrival_events = event_context.get('bot_arrival_events')
-    active_actions = event_context.get('active_actions')
-    cooldowns = event_context.get('cooldowns')
-    nav = event_context.get('navigator')
-    manager = event_context.get('manager')
-    event = data.get("event_type")
-    bot_id = data.get("bot_id")
+    event = data.get('event_type')
+    bot_id = int(data.get('bot_id'))
     
-    if event == "arrived":
-        if bot_id in bot_arrival_events: bot_arrival_events[bot_id].set()
+    handler = EVENT_HANDLERS.get(event)
+    
+    if handler:
+        handler(bot_id, data, event_context)
+    else:
+        print(f"Unknown event: {event}")
         
-    elif event == "task_complete":
-        print(f"\nBot {bot_id} completed {data.get('task_name')}")
+EVENT_HANDLERS = {
+    "kill_complete": _handle_kill_complete,
+    "emergency_meeting": _handle_meeting_trigger,
+    "report": _handle_meeting_trigger,
+    "sabotage_successful": _handle_sabotage,
+    "task_complete": _handle_task,
+    "corpse_spotted": _handle_corpse_spotted,
+    "witness": _handle_witness,
+    "exit_vent": _handle_vent
+}
         
-    elif event == "kill_complete":
-        target_id = data.get('target_id')
-        print(f"Bot {target_id} was murdered by bot {bot_id}")
-        if bot_id in active_actions: del active_actions[bot_id]
-        cooldowns['kill'][bot_id] = time.time() + 45
-        
-    elif event == "sabotage_successful":
-        system = data.get('system')
-        room = data.get('room')
-        print(f"Bot {bot_id} sabotaged {system}")
-        cooldowns['sabotage'][bot_id] = time.time() + 30
-        
-        if system == "doors" and room != "none":
-            asyncio.create_task(lock_doors(room, nav))
-            
-    elif event in ["emergency_meeting", "report"]:
-        victim_id = data.get("victim_id") if event == "report" else None
-        asyncio.create_task(manager.start_meeting(bot_id, victim_id))
-        
-    elif event == "corpse_spotted":
-        corpse_id = data.get("corpse_id")
-        #TODO: Talk to the narrator
-        
-    elif event == "witness":
-        imposter_id = data.get("imposter_id")
-        action = data.get("action")
-        #TODO: Talk to the narrator
-        
+    

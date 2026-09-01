@@ -95,7 +95,7 @@ class MeetingManager:
             
             try:
                 turn_data = await asyncio.wait_for(self.response_queue.get(), timeout=0.5)
-                bot_id = turn_data.get("bot_id")
+                bot_id = int(turn_data.get("bot_id"))
                 responses_received += 1
                 
                 if turn_data.get("chat"):

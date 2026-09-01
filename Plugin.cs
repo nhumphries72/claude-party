@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
@@ -162,7 +163,6 @@ namespace Amogus
                     string isImposter = player.Data.Role.IsImpostor ? "true": "false";
                     string alive = player.Data.IsDead ? "false": "true";
 
-                    telemetryBuilder.Append($"\"{botId}\": {{\"x\": {pos.x:F2}, \"y\": {pos.y:F2}, \"room\": \"{roomName}\", \"imposter\": {isImposter}, \"alive\": {alive}}}");
                     first = false;
 
                     if (!player.Data.IsDead && !previousVisibleCorpses.ContainsKey(botId))
@@ -172,6 +172,10 @@ namespace Amogus
 
                     HashSet<int> currentlyVisible = [];
                     VisionContainer vision = BotVision.GetVisibleEntitites(player, allCorpses);
+
+                    var visibleIds = vision.VisiblePlayers.Select(p => p.PlayerId.ToString());
+                    string visiblePlayersJson = $"[{string.Join(",", visibleIds)}]";
+                    telemetryBuilder.Append($"\"{botId}\": {{\"x\": {pos.x:F2}, \"y\": {pos.y:F2}, \"room\": \"{roomName}\", \"imposter\": {isImposter}, \"alive\": {alive}, \"visible_players\": {visiblePlayersJson}");
 
                     foreach (DeadBody body in vision.VisibleCorpses)
                     {

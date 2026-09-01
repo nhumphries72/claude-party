@@ -7,6 +7,7 @@ from navigator import Navigator
 from meeting_manager import MeetingManager
 from cli_functions import execute_command
 from events import handle_events
+from collections import deque
 
 active_connection = None
 nav = Navigator()
@@ -16,6 +17,7 @@ with open("task_info.json", 'r') as task_info: TASK_INFO = json.load(task_info)
 
 bots, vents, bot_arrival_events, active_actions, MASTER_TASKS = {}, {}, {}, {}, {}
 cooldowns = { "kill": {}, "sabotage": {} }
+bot_memories = {i: deque(maxlen=5) for i in range(15)}
 manager = MeetingManager(active_connection, bots, active_actions, bot_arrival_events)
 
 async def handle_game_state(websocket):
@@ -34,6 +36,7 @@ async def handle_game_state(websocket):
                     bots[int(id)] = {
                         'position': {"x": info['x'], "y": info['y']},
                         'alive': info['alive'],
+                        'visible_players': info.get('visible_players', [])
                     }
                     bots[int(id)]['role'] = "imposter" if info['imposter'] else "crewmate"
             
@@ -44,7 +47,9 @@ async def handle_game_state(websocket):
                     "active_actions": active_actions,
                     "cooldowns": cooldowns,
                     "navigator": nav,
-                    "manager": manager
+                    "manager": manager,
+                    "memory": bot_memories,
+                    "find_current_room": find_current_room
                 }
                 handle_events(event_context)
                 
@@ -113,6 +118,8 @@ async def traverse_path(bot_id, target_node):
         
         if bot_id not in bot_arrival_events: bot_arrival_events[bot_id] = asyncio.Event()
         
+        seen_bots = set()
+        
         for step, node in enumerate(path):
             target_x, target_y = nav.nodes[node]['x'], nav.nodes[node]['y']
             
@@ -127,13 +134,21 @@ async def traverse_path(bot_id, target_node):
             }
             
             await active_connection.send(json.dumps(payload))
-            
             await bot_arrival_events[bot_id].wait()
             
+            visible_bots = bots[bot_id].get('visible_players')
+            for seen_id in visible_bots: seen_bots.add(str(seen_id))
+
         print(f"Bot {bot_id} reached destination {target_node}")
     
     except asyncio.CancelledError:
         pass
+    
+def find_current_room(bot_id):
+    bot_pos = bots[bot_id]["position"]
+    current_node = nav.find_nearest_node(bot_pos["x"], bot_pos["y"])
+    room_key = next(k for k in nav.rooms if current_node in k)
+    return room_key
         
 async def cli():
     global NODE_MAP, TASK_INFO, MASTER_TASKS
@@ -156,7 +171,8 @@ async def cli():
             "navigator": nav,
             "bots": bots,
             "vents": vents,
-            "ROOM_NODES": ROOM_NODES
+            "ROOM_NODES": ROOM_NODES,
+            "bot_memories": bot_memories
         }
         
         await execute_command(command, parts, context)

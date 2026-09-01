@@ -84,11 +84,13 @@ async def move(parts, context):
 async def run_move_sequence(bot_id, destination, context):
     traverse_path = context.get('traverse_path')
     active_actions = context.get('active_actions')
+    bot_memories = context.get('bot_memories')
     
     try:
         await traverse_path(bot_id, destination)
     except asyncio.CancelledError:
         print(f"Bot {bot_id}'s movement was interrupted")
+        bot_memories[bot_id].append(f"Interrupted while moving to {destination}")
         raise 
     finally:
         if bot_id in active_actions: del active_actions[bot_id]
@@ -143,6 +145,7 @@ async def run_task_sequence(bot_id, task_index, task_obj, location, context):
     traverse_path = context.get('traverse_path')
     active_actions = context.get('active_actions')
     task_name = task_obj.get('task')
+    bot_memories = context.get('bot_memories')
     
     try:
         print(f"Bot {bot_id} heading to {location} to complete task {task_name}")
@@ -167,14 +170,17 @@ async def run_task_sequence(bot_id, task_index, task_obj, location, context):
         elif task_obj.get('async'):
             task_obj['cooldown_until'] = time.time() + 60
             print(f"Bot {bot_id}'s sample will be ready in one minute")
+            bot_memories[bot_id].append("Began sample inspection")
         else:
             print(f"Bot {bot_id} progressed task {task_name}")
+            bot_memories[bot_id].append(f"Completed stage of task {task_name}")
             
         with open("task_dump.json", "w") as f:
             json.dump(MASTER_TASKS, f, indent=4)
     
     except asyncio.CancelledError:
         print(f"Bot {bot_id}'s task {task_name} was interrupted")
+        bot_memories[bot_id].append(f"Interrupted during task {task_name}")
         raise
     
     finally:
@@ -194,6 +200,7 @@ async def call_meeting(parts, context):
     active_actions = context.get('active_actions')
     active_connection = context.get('active_connection')
     traverse_path = context.get('traverse_path')
+    bot_memories = context.get('bot_memories')
     
     print(f"Bot {bot_id} preparing to call an emergency meeting")
     
@@ -209,6 +216,8 @@ async def call_meeting(parts, context):
         interrupt_bot(other_bots, context)
     except asyncio.CancelledError:
         print(f"Bot {bot_id} interrupted from calling meeting")
+        bot_memories[bot_id].append("Interrupted while moving to call a meeting")
+        raise
     finally:
         if bot_id in active_actions: del active_actions[bot_id]
         
@@ -243,6 +252,7 @@ async def run_hunt_sequence(imposter_id, victim_id, context):
     active_actions = context.get('active_actions')
     bots = context.get('bots')
     traverse_path = context.get('traverse_path')
+    bot_memories = context.get('bot_memories')
     
     try:
         while True:
@@ -266,6 +276,7 @@ async def run_hunt_sequence(imposter_id, victim_id, context):
                 await traverse_path(imposter_id, victim_node)
     except asyncio.CancelledError:
         print(f"Bot {imposter_id}'s hunt was interrupted")
+        bot_memories[imposter_id].append(f"Interrupted while hunting {victim_id}")
         raise
     finally:
         if imposter_id in active_actions:
