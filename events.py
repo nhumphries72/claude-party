@@ -6,12 +6,11 @@ def _handle_arrived(bot_id, data, ctx):
     if bot_id in ctx['bot_arrival_events']: 
         ctx['bot_arrival_events'][bot_id].set()
     room = ctx['find_current_room'](bot_id)
-    ctx['bot_memories'][bot_id].append(f"Arrived at {room}")
     
-    if bot_id not in ctx['active_actions']:
-        return {"current_room": room}
-    else:
-        return None
+    last_memory = ctx['bot_memories'][bot_id][-1] if ctx['bot_memories'][bot_id] else""
+    if last_memory != f"Arrived at {room}": ctx['bot_memories'][bot_id].append(f"Arrived at {room}")
+    
+    return None
 
 def _handle_kill_complete(bot_id, data, ctx):
     target_id = data.get('target_id')
@@ -77,7 +76,7 @@ def _handle_sabotage(bot_id, data, ctx):
 def _handle_task(bot_id, data, ctx):
     print(f"Bot {bot_id} completed {data.get('task_name')}")
     ctx['bot_memories'][bot_id].append(f"Finished task {data.get('task_name')}")
-    return {}
+    return None
     
 def _handle_corpse_spotted(bot_id, data, ctx):
     corpse_id = data.get('corpse_id')

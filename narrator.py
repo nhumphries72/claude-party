@@ -1,6 +1,6 @@
 import asyncio
 import re
-from claude_agent_sdk import query, ClaudeAgentOptions
+from claude_agent_sdk import query, ClaudeAgentOptions, AssistantMessage
 import prompt_manifest as manifest
 from datetime import datetime
 
@@ -34,7 +34,8 @@ class Narrator:
         self.manager = meeting_manager
         
         self.options = ClaudeAgentOptions(
-            system_prompt="You are an AI playing Among Us. Follow XML rules strictly."
+            system_prompt="You are an AI playing Among Us. Follow XML rules strictly.",
+            permission_mode="dontAsk"
         )
         self.max_retries = 2
         
@@ -52,8 +53,6 @@ class Narrator:
                 continue
             
             actions = self._parse_xml(response_text)
-            self._log_filler(bot_id, response_text, state)
-            
             if not actions:
                 error_message = "No <action> tag found. You must format your decision inside <action> tags."
                 continue
@@ -64,6 +63,7 @@ class Narrator:
                 error_message = validation_error
                 continue
             
+            self._log_interaction(bot_id, state, event_type, full_prompt, response_text, valid_actions)
             self._route_actions(bot_id, valid_actions, state)
             return
         
@@ -75,11 +75,10 @@ class Narrator:
         
         try:
             async for message in query(prompt=prompt_string, options=self.options):
-                if isinstance(message, str):
-                    response_text += message
-                else:
-                    print(f"Error: API did not return a string. Returned {type(message)} object. Message: {message}")
-                    return None
+                if isinstance(message, AssistantMessage):
+                    for block in message.content:
+                        if hasattr(block, 'text'):
+                            response_text += block.text
             return response_text
         except Exception as e:
             print(f"API Error: {e}")
@@ -91,15 +90,16 @@ class Narrator:
         else:
             self.command_queue.put_nowait(f"wait {bot_id} 5")
             
-    def _log_filler(self, bot_id, raw_response, state):
-        filler = re.sub(r'<action>.*?</action>', '', raw_response, flags=re.IGNORECASE | re.DOTALL).strip()
-        if not filler: return
-        
-        color = state.get("color")
+    def _log_interaction(self, bot_id, state, event_type, prompt, response, actions):
+        color = state.get('color')
         timestamp = datetime.now().strftime("%H:%M:%S")
-        log_entry = f"[{timestamp} Bot {bot_id} ({color}): {filler}]\n"
         
-        with open("monologues.txt", "a") as f:
+        log_entry = f"=== {timestamp} | Bot {bot_id} ({color}) | Event: {event_type} ===\n"
+        log_entry += f"--- Prompt ---\n{prompt}\n\n"
+        log_entry += f"--- Response ---\n{response}\n\n"
+        log_entry += f"--- Parsed Actions ---\n{actions}\n\n\n"
+        
+        with open("monologues.txt", "a", encoding="utf-8") as f:
             f.write(log_entry)
             
     def _parse_xml(self, response_text):
@@ -195,11 +195,12 @@ class Narrator:
                 keys.append('sabotage')
             return keys
         
+        if len(state.get('tasks', [])) > 0: keys.append('task')
         if not state.get("in_vent"): keys.append("move")
         if state.get("meetings_remaining") > 0: keys.append("meeting")
         if state.get("active_sabotage") in ["lights", "o2", "comms", "reactor"]: keys.append("fix")
         if state.get("role") == "imposter": keys.extend(["kill", "sabotage", "vent"])
-        keys.append("report")
+        if len(state.get('visible_corpses', [])) > 0: keys.append("report")
         
         return keys
     
@@ -209,7 +210,7 @@ class Narrator:
         formatted_docs = []
         
         doc_kwargs = {
-            "valid_rooms": ", ".join(list(ROOM_ALIASES.keys())),
+            "valid_rooms": ", ".join(sorted(set(ROOM_ALIASES.values()))),
             "active_sabotage": state.get("active_sabotage", "None")
         }
         
@@ -224,7 +225,7 @@ class Narrator:
         
         role = state.get('role')
         identity = manifest.IDENTITY.get(role).format(bot_id=bot_id, color=state.get('color'))
-        task_list_str = "\n".join([f"{i+1}. {t['task']}" for i, t in enumerate(state.get('tasks', []))])
+        task_list_str = "\n".join([f"{i+1}. {t['task']} (Location: {t['room']})" for i, t in enumerate(state.get('tasks', []))])
         memory_str = "\n".join(state.get('memory_log', []))
         current_status = "Alive" if state.get("alive") else "Dead"
         
@@ -261,7 +262,7 @@ class Narrator:
         
         command_docs = self._get_available_command_docs(state)
         rules_block = "<rules>\nYou must output exactly one action using the strict XML formats below:\n\n"
-        rules_block += command_docs
+        rules_block += "\n".join(command_docs)
         rules_block += "\n</rules>"
         
         return f"{identity}\n\n{state_block}\n\n{event_str}\n\n{rules_block}"

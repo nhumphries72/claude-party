@@ -975,7 +975,9 @@
             "cafeteria_south",
             "cafeteria_vent",
             "cafeteria_west",
-            "cafeteria_wiring"
+            "cafeteria_wiring",
+            "emergency_table_north",
+            "emergency_table_south"
         ],
         "Weapons":
         [
@@ -1116,7 +1118,8 @@
             "east_intersection_4",
             "o2_accept_power",
             "navigation_wiring",
-            "security_wiring"
+            "security_wiring",
+            "central_intersection"
         ]
     }
 }

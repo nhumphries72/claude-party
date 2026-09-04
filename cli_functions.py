@@ -85,6 +85,10 @@ async def run_move_sequence(bot_id, destination, context):
     traverse_path = context.get('traverse_path')
     active_actions = context.get('active_actions')
     bot_memories = context.get('bot_memories')
+    narrator = context.get('narrator')
+    generate_snapshot = context.get('generate_snapshot')
+    
+    completed = False
     
     try:
         await traverse_path(bot_id, destination)
@@ -94,6 +98,17 @@ async def run_move_sequence(bot_id, destination, context):
         raise 
     finally:
         if bot_id in active_actions: del active_actions[bot_id]
+        
+    if completed and narrator and generate_snapshot:
+        state = generate_snapshot(bot_id)
+        asyncio.create_task(
+            narrator.generate_action(
+                bot_id=bot_id,
+                state=state,
+                event_type="arrived",
+                event_kwargs={"current_room": state.get('current_room')}
+            )
+        )
         
 async def prepare_task(parts, context):
     MASTER_TASKS = context.get('MASTER_TASKS')
@@ -147,6 +162,11 @@ async def run_task_sequence(bot_id, task_index, task_obj, location, context):
     task_name = task_obj.get('task')
     bot_memories = context.get('bot_memories')
     bots = context.get('bots')
+    narrator = context.get('narrator')
+    bots = context.get('bots')
+    generate_snapshot = context.get('generate_snapshot')
+    
+    event = None
     
     try:
         print(f"Bot {bot_id} heading to {location} to complete task {task_name}")
@@ -157,7 +177,9 @@ async def run_task_sequence(bot_id, task_index, task_obj, location, context):
         
         await asyncio.sleep(duration)
         
-        if bots[bot_id]['role'] == "imposter": return
+        if bots[bot_id]['role'] == "imposter":
+            event = "task_faked"
+            return
         
         MASTER_TASKS[str(bot_id)][task_index-1]['locations'].pop(0)
         
@@ -171,12 +193,15 @@ async def run_task_sequence(bot_id, task_index, task_obj, location, context):
             await active_connection.send(json.dumps(payload))
             print(f"Bot {bot_id} fully completed {task_name}")
             MASTER_TASKS[str(bot_id)].pop(task_index - 1)
+            event = "task_complete"
         elif task_obj.get('async'):
             task_obj['cooldown_until'] = time.time() + 60
             print(f"Bot {bot_id}'s sample will be ready in one minute")
             bot_memories[bot_id].append("Began sample inspection")
+            event = "task_progress"
         else:
             print(f"Bot {bot_id} progressed task {task_name}")
+            event = "task_progress"
             bot_memories[bot_id].append(f"Completed stage of task {task_name}")
             
         with open("task_dump.json", "w") as f:
@@ -189,6 +214,17 @@ async def run_task_sequence(bot_id, task_index, task_obj, location, context):
     
     finally:
         if bot_id in active_actions: del active_actions[bot_id]
+        
+        if event and narrator and generate_snapshot:
+            state = generate_snapshot(bot_id)
+            asyncio.create_task(
+                narrator.generate_action(
+                    bot_id=bot_id,
+                    state=state,
+                    event_type=event,
+                    event_kwargs={"task_name": task_name}
+                )
+            )
         
 async def refresh(parts, context):
     global NODE_MAP, TASK_INFO, MASTER_TASKS

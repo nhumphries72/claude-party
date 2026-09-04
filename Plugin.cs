@@ -181,7 +181,6 @@ namespace Amogus
                     {
                         int bodyInstanceId = body.GetInstanceID();
                         currentlyVisible.Add(bodyInstanceId);
-                        telemetryBuilder.Append($", \"visible_corpses\": [{string.Join(",", currentlyVisible)}]");
 
                         if (!previousVisibleCorpses[botId].Contains(bodyInstanceId))
                         {
@@ -189,6 +188,9 @@ namespace Amogus
                             WebSocketManager.Send(payload);
                         }
                     }
+                    telemetryBuilder.Append($", \"visible_corpses\": [{string.Join(",", currentlyVisible)}]");
+                    telemetryBuilder.Append("}");
+
                     previousVisibleCorpses[botId] = currentlyVisible;
                 }
                 telemetryBuilder.Append("}}");

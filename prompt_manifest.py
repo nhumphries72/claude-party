@@ -51,6 +51,10 @@ EVENTS = {
     You fully completed your task: {task_name}. What is your next move?
     </event>""",
     
+    "task_faked": """<event>
+    You pretended to completed the task: {task_name}. What is your next move?
+    </event>""",
+    
     "kill_complete": """<event>
     You killed Bot {target_id}. You are now standing above a corpse. What is your next move?
     </event>""",

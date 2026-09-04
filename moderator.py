@@ -101,6 +101,8 @@ async def handle_game_state(websocket):
                             })
                     
                 with open("task_dump.json", "w") as f: json.dump(MASTER_TASKS, f, indent=4)
+                with open("monologues.txt", "w", encoding='utf-8') as f:
+                    f.write("")
                 
                 for bot in assignments.keys():
                     bot_id = int(bot)
@@ -173,14 +175,27 @@ async def traverse_path(bot_id, target_node):
 def find_current_room(bot_id):
     bot_pos = bots[bot_id]["position"]
     current_node = nav.find_nearest_node(bot_pos["x"], bot_pos["y"])
-    room_key = next(k for k in nav.rooms if current_node in k)
-    return room_key
+    
+    for room_name, nodes in nav.rooms.items():
+        if current_node in nodes:
+            return room_name
+    
+    raise ValueError(f"Fatal error: node {current_node} is not assigned to any room.")
 
 def generate_snapshot(bot_id):
     bot_info = bots[bot_id]
     
     k_time, s_time = cooldowns['kill'].get(bot_id), cooldowns['sabotage'].get(bot_id)
     k_cd, s_cd = k_time - time.time() if k_time else None, s_time - time.time() if s_time else None
+    
+    tasks_with_rooms = []
+    for t in MASTER_TASKS.get(str(bot_id), []):
+        t_data = t.copy()
+        if t.get('locations'):
+            target_node = t['locations'][0]
+            room = next((k for k in nav.rooms if target_node in nav.rooms[k]))
+            t_data['room'] = room
+        tasks_with_rooms.append(t_data)
     
     state = {
         "role": bot_info['role'],
@@ -191,7 +206,7 @@ def generate_snapshot(bot_id):
         "visible_players": bot_info.get('visible_players', []),
         "visible_corpses": bot_info.get('visible_corpses', []),
         
-        "tasks": MASTER_TASKS.get(str(bot_id), []),
+        "tasks": tasks_with_rooms,
         "memory_log": list(bot_memories[bot_id]),
         "match_notes": "None.",
         
