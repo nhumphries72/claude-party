@@ -10,6 +10,7 @@ class MeetingManager:
         self.bot_arrival_events = bot_arrival_events
         
         self.game_phase = "roaming"
+        self.voting_open = False
         self.context = {}
         
         self.response_queue = asyncio.Queue()
@@ -51,12 +52,12 @@ class MeetingManager:
         round_num = 1
         
         while time.time() < meeting_ends_at:
-            voting_open = time.time() >= voting_opens_at
-            print(f"\nMeeting round {round_num} | voting open: {voting_open}")
+            self.voting_open = time.time() >= voting_opens_at
+            print(f"\nMeeting round {round_num} | voting open: {self.voting_open}")
             
             #TODO: Implement narrator call here
             
-            state_changed = await self._poll_round(voting_open, timeout=15.0)
+            state_changed = await self._poll_round(self.voting_open, timeout=15.0)
             
             if len(self.context["votes_cast"]) == len(self.context["eligible_voters"]):
                 print("All bots have voted. Concluding meeting.")
@@ -66,7 +67,7 @@ class MeetingManager:
                 print("Nobody wants to talk so they are being left in silence")
                 time_left = meeting_ends_at - time.time()
                 
-                if not voting_open:
+                if not self.voting_open:
                     sleep_time = voting_opens_at - time.time()
                     if sleep_time > 0:
                         await asyncio.sleep(sleep_time)
@@ -83,7 +84,7 @@ class MeetingManager:
             "action": "proceed"
         }))
             
-    async def _poll_round(self, voting_open, timeout):
+    async def _poll_round(self, timeout):
         expected_reponses = len(self.context["eligible_voters"])
         responses_received = 0
         state_changed = False
@@ -110,7 +111,7 @@ class MeetingManager:
                         "message": message
                     }))
                     
-                if turn_data.get("vote") and voting_open:
+                if turn_data.get("vote") and self.voting_open:
                     target = turn_data["vote"]
                     
                     if bot_id not in self.context["votes_cast"]:

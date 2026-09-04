@@ -8,6 +8,7 @@ from meeting_manager import MeetingManager
 from cli_functions import execute_command
 from events import handle_events
 from collections import deque
+from narrator import Narrator
 
 active_connection = None
 nav = Navigator()
@@ -19,6 +20,8 @@ bots, vents, bot_arrival_events, active_actions, MASTER_TASKS = {}, {}, {}, {}, 
 cooldowns = { "kill": {}, "sabotage": {} }
 bot_memories = {i: deque(maxlen=5) for i in range(15)}
 manager = MeetingManager(active_connection, bots, active_actions, bot_arrival_events)
+command_queue = asyncio.Queue()
+narrator = Narrator(command_queue, manager)
 
 async def handle_game_state(websocket):
     global active_connection, MASTER_TASKS
@@ -176,6 +179,33 @@ async def cli():
         }
         
         await execute_command(command, parts, context)
+        
+async def execute_internally():
+    global NODE_MAP, TASK_INFO, MASTER_TASKS
+    
+    while True:
+        cmd_string = await command_queue.get()
+        
+        parts = cmd_string.split()
+        if not parts: continue
+        
+        command = parts.pop(0)
+        context = {
+                    "active_connection": active_connection,
+                    "active_actions": active_actions,
+                    "MASTER_TASKS": MASTER_TASKS,
+                    "traverse_path": traverse_path,
+                    "bots": bots,
+                    "bot_arrival_events": bot_arrival_events,
+                    "cooldowns": cooldowns,
+                    "navigator": nav,
+                    "bots": bots,
+                    "vents": vents,
+                    "ROOM_NODES": ROOM_NODES,
+                    "bot_memories": bot_memories
+                }
+        
+        await execute_command(command, parts, context)
                     
 async def main():
     
@@ -184,7 +214,8 @@ async def main():
         
     await asyncio.gather(
         server,
-        cli()
+        cli(),
+        execute_internally()
     )
         
 if __name__ == "__main__":

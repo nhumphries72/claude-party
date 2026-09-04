@@ -1,0 +1,197 @@
+import asyncio
+import re
+from claude_agent_sdk import query, ClaudeAgentOptions
+import prompt_manifest as manifest
+from datetime import datetime
+
+ROOM_ALIASES = {
+    "cafeteria": "Cafeteria", "cafe": "Cafeteria",
+    "lifesupp": "LifeSupp", "o2": "LifeSupp", "oxygen": "LifeSupp",
+    "medbay": "MedBay", "med bay": "MedBay", "clinic": "MedBay",
+    "admin": "Admin", "administration": "Admin",
+    "electrical": "Electrical", "elec": "Electrical",
+    "storage": "Storage",
+    "weapons": "Weapons", "weaps": "Weapons",
+    "navigation": "Navigation", "nav": "Navigation",
+    "communications": "Comms", "comms": "Comms",
+    "shields": "Shields",
+    "reactor": "Reactor",
+    "upper engine": "UpperEngine", "upperengine": "UpperEngine",
+    "lower engine": "LowerEngine", "lowerengine": "LowerEngine",
+    "security": "Security", "cameras": "Security", "cams": "Security"
+}        
+
+SYSTEM_ALIASES = {
+    "reactor": "reactor", "meltdown": "reactor",
+    "lifesupp": "lifesupp", "o2": "lifesupp", "oxygen": "lifesupp",
+    "lights": "lights", "electrical": "lights",
+    "comms": "comms", "communications": "comms"
+}
+
+class Narrator:
+    def __init__(self, command_queue, meeting_manager):
+        self.command_queue = command_queue
+        self.manager = meeting_manager
+        
+        self.options = ClaudeAgentOptions(
+            system_prompt="You are an AI playing Among Us. Follow XML rules strictly."
+        )
+        self.max_retries = 2
+        
+    async def generate_action(self, bot_id, state, event_type, event_kwargs=None):
+        if event_kwargs is None: event_kwargs = {}
+        
+        error_message = None
+        
+        for attempt in range(self.max_retries + 1):
+            full_prompt = self._compile_prompt(bot_id, state, event_type, event_kwargs)
+            
+            response_text = await self._query_llm(full_prompt)
+            if not response_text:
+                error_message = "API returned empty response"
+                continue
+            
+            actions = self._parse_xml(response_text)
+            self._log_filler(bot_id, response_text, state)
+            
+            if not actions:
+                error_message = "No <action> tag found. You must format your decision inside <action> tags."
+                continue
+            
+            valid_actions, validation_error = self._validate_actions(actions, state)
+            
+            if validation_error:
+                error_message = validation_error
+                continue
+            
+            self._route_actions(bot_id, valid_actions, state)
+            return
+        
+        print(f"Bot {bot_id} hit retry cap. Forcing failsafe.")
+        self._execute_failsafe(bot_id, state)
+        
+    async def _query_llm(self, prompt_string):
+        response_text = ""
+        
+        try:
+            async for message in query(prompt=prompt_string, options=self.options):
+                if isinstance(message, str):
+                    response_text += message
+                else:
+                    print(f"Error: API did not return a string. Returned {type(message)} object. Message: {message}")
+                    return None
+            return response_text
+        except Exception as e:
+            print(f"API Error: {e}")
+            return None
+        
+    def _execute_failsafe(self, bot_id, state):
+        if self.manager.game_phase == "meeting":
+            self.manager.round_responses.put_nowait({"bot_id": bot_id, "wait": True})
+        else:
+            self.command_queue.put_nowait(f"wait {bot_id} 5")
+            
+    def _log_filler(self, bot_id, raw_response, state):
+        filler = re.sub(r'<action>.*?</action>', '', raw_response, flags=re.IGNORECASE | re.DOTALL).strip()
+        if not filler: return
+        
+        color = state.get("color")
+        timestamp = datetime.now().strftime("%H:%M:%S")
+        log_entry = f"[{timestamp} Bot {bot_id} ({color}): {filler}]\n"
+        
+        with open("monologues.txt", "a") as f:
+            f.write(log_entry)
+            
+    def _parse_xml(self, response_text):
+        return re.findall(
+            r'<action>\s*(.*?)\s*</action>',
+            response_text, re.IGNORECASE | re.DOTALL
+        )
+        
+    def _normalize_argument(self, action_string):
+        parts = action_string.split(maxsplit=1)
+        cmd = parts[0].lower()
+        arg = parts[1] if len(parts) > 1 else ""
+        arg_lower = arg.lower().strip()
+        
+        if cmd == "move":
+            arg = ROOM_ALIASES.get(arg_lower, arg)
+        elif cmd == "vent":
+            vent_parts = arg_lower.split(maxsplit=1)
+            if len(vent_parts) == 2:
+                sub_cmd, room_arg = vent_parts[0], vent_parts[1]
+                
+                dir_suffix = ""
+                if room_arg.endswith(" north"):
+                    room_arg, dir_suffix = room_arg[:-6].strip(), " north"
+                elif room_arg.endswith(" south"):
+                    room_arg, dir_suffix = room_arg[:-6].strip(), " south"
+                
+                fixed_room = ROOM_ALIASES.get(room_arg, vent_parts[1])
+                arg = f"{sub_cmd} {fixed_room}{dir_suffix}"
+        elif cmd == "sabotage":
+            if arg_lower.startswith("doors "):
+                room_part = arg_lower.replace("doors ", "").strip()
+                fixed_room = ROOM_ALIASES.get(room_part, room_part)
+                arg = f"doors {fixed_room}"
+            else:
+                arg = SYSTEM_ALIASES.get(arg_lower, arg)
+                
+        return cmd, arg
+    
+    def _validate_actions(self, actions, state):
+        normalized_actions = []
+        allowed_cmds = self._get_allowed_command_keys(state)
+        
+        for raw_action in actions:
+            cmd, arg = self._normalize_argument(raw_action)
+            
+            if cmd not in allowed_cmds:
+                return None, f"Command '{cmd}' is either invalid or unavailable right now."
+            if cmd in ["move", "sabotage"] and not arg:
+                return None, f"The '{cmd}' command requires an argument."
+            
+            normalized_actions.append((cmd, arg))
+            
+        if self.manager.game_phase == "roaming" and len(normalized_actions) > 1:
+            normalized_actions = [normalized_actions[0]]
+            
+        return normalized_actions, None
+    
+    def _route_actions(self, bot_id, valid_actions, state):
+        
+        if self.manager.game_phase == "meeting":
+            turn_data = {"bot_id": bot_id}
+            for cmd, arg in valid_actions:
+                if cmd == "chat":
+                    turn_data["chat"] = arg
+                elif cmd == "vote":
+                    turn_data["vote"] = arg
+                elif cmd == "wait":
+                    turn_data["wait"] = True
+            
+            self.manager.round_responses.put_nowait(turn_data)
+        
+        else:
+            for cmd, arg in valid_actions:
+                cli_command = f"{cmd} {bot_id} {arg}".strip()
+                self.command_queue.put_nowait(cli_command)
+                
+    def _get_allowed_command_keys(self, state):
+        keys = ["wait"]
+        if self.manager.game_phase == "meeting":
+            keys.append("chat")
+            if self.manager.voting_open:
+                keys.append("vote")
+            return keys
+        
+        if not state.get("in_vent"): keys.append("move")
+        if state.get("meetings_remaining") > 0: keys.append("meeting")
+        if state.get("active_sabotage") in ["lights", "o2", "comms", "reactor"]: keys.append("fix")
+        if state.get("role") == "imposter": keys.extend(["kill", "sabotage", "vent"])
+        keys.append("report")
+        
+        return keys
+        
+        
+        

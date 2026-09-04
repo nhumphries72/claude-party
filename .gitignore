@@ -4,3 +4,5 @@ obj/
 *.dll
 *.gpr
 *.rep
+node_map_plot.py 
+stress_test.py
