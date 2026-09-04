@@ -146,6 +146,7 @@ async def run_task_sequence(bot_id, task_index, task_obj, location, context):
     active_actions = context.get('active_actions')
     task_name = task_obj.get('task')
     bot_memories = context.get('bot_memories')
+    bots = context.get('bots')
     
     try:
         print(f"Bot {bot_id} heading to {location} to complete task {task_name}")
@@ -155,6 +156,8 @@ async def run_task_sequence(bot_id, task_index, task_obj, location, context):
         duration = random.uniform(task_obj['duration'][0], task_obj['duration'][1])
         
         await asyncio.sleep(duration)
+        
+        if bots[bot_id]['role'] == "imposter": return
         
         MASTER_TASKS[str(bot_id)][task_index-1]['locations'].pop(0)
         
@@ -167,6 +170,7 @@ async def run_task_sequence(bot_id, task_index, task_obj, location, context):
             }
             await active_connection.send(json.dumps(payload))
             print(f"Bot {bot_id} fully completed {task_name}")
+            MASTER_TASKS[str(bot_id)].pop(task_index - 1)
         elif task_obj.get('async'):
             task_obj['cooldown_until'] = time.time() + 60
             print(f"Bot {bot_id}'s sample will be ready in one minute")
@@ -355,3 +359,38 @@ async def vent(parts, context):
     }
     subcommand = vent_commands[parts[1]]
     await subcommand(parts, context)
+    
+async def wait_action(parts, context):
+    bot_id = int(parts[0])
+    duration = float(parts[1]) if len(parts) > 1 else 5.0
+    
+    active_actions = context.get('active_actions')
+    narrator = context.get('narrator')
+    generate_snapshot = context.get('generate_snapshot')
+    
+    print(f"Bot {bot_id} waiting for {duration} seconds")
+    
+    async def do_wait():
+        try:
+            await asyncio.sleep(duration)
+            
+            if narrator and generate_snapshot:
+                state = generate_snapshot(bot_id)
+                asyncio.create_task(
+                    narrator.generate_action(
+                        bot_id=bot_id,
+                        state=state,
+                        event_type="arrived",
+                        event_kwargs={"current_room": state['current_room']}
+                    )
+                )
+                
+        except asyncio.CancelledError:
+            print(f"Bot {bot_id}'s wait was interrupted.")
+            context['bot_memories'][bot_id].append("Interrupted while waiting")
+            raise
+        
+        finally:
+            if bot_id in active_actions: del active_actions[bot_id]
+            
+    active_actions[bot_id] = asyncio.create_task(do_wait())

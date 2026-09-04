@@ -15,10 +15,12 @@ class MeetingManager:
         
         self.response_queue = asyncio.Queue()
         
-    async def start_meeting(self, caller_id, victim_id=None):
+    async def start_meeting(self, caller_id, victim_id, narrator, snapshot_func):
         if self.game_phase == "meeting": return
         
         self.game_phase = "meeting"
+        self.narrator = narrator
+        self.generate_snapshot = snapshot_func
         
         for bot_id, task in self.active_actions.items():
             task.cancel()
@@ -55,7 +57,34 @@ class MeetingManager:
             self.voting_open = time.time() >= voting_opens_at
             print(f"\nMeeting round {round_num} | voting open: {self.voting_open}")
             
-            #TODO: Implement narrator call here
+            while not self.response_queue.empty():
+                try:
+                    self.response_queue.get_nowait()
+                except asyncio.QueueEmpty:
+                    break
+            
+            chat_log = "\n".join([f"Bot {b}: {msg}" for b, msg in self.context["chat_history"]])
+            if not chat_log: chat_log = "No messages yet."
+            
+            reason = f"Reported Bot {self.context['victim_id']}'s body." if self.context.get('victim_id') else "Emergency button pressed."
+            voting_status = "Open" if self.voting_open else "Closed"
+            
+            for bot_id in self.context["eligible_voters"]:
+                state_snapshot = self.generate_snapshot(bot_id)
+                asyncio.create_task(
+                    self.narrator.generate_action(
+                        bot_id=bot_id,
+                        state=state_snapshot,
+                        event_type="meeting_turn",
+                        event_kwargs={
+                            "round_num": round_num,
+                            "caller_id": self.context['caller_id'],
+                            "reason": reason,
+                            "chat_history": chat_log,
+                            "voting_status": voting_status
+                        }
+                    )
+                )
             
             state_changed = await self._poll_round(self.voting_open, timeout=15.0)
             
@@ -79,6 +108,8 @@ class MeetingManager:
             round_num += 1
         
         print("\nMeeting concluded.")
+        self.game_phase = "roaming"
+        
         await self.connection.send(json.dumps({
             "type": "command",
             "action": "proceed"

@@ -23,6 +23,12 @@ manager = MeetingManager(active_connection, bots, active_actions, bot_arrival_ev
 command_queue = asyncio.Queue()
 narrator = Narrator(command_queue, manager)
 
+#narrator trackers
+meetings_remaining = {i: 1 for i in range(15)}
+bot_colors = {0: "Red", 1: "Blue", 2: "Green", 3: "Pink", 4: "Orange", 5: "Yellow", 6: "Black", 7: "White", 8: "Purple", 9: "Brown", 10: "Cyan", 11: "Lime", 12: "Maroon", 13: "Rose", 14: "Banana"}
+active_sabotage = {'system': None}
+sabotage_being_fixed = []
+
 async def handle_game_state(websocket):
     global active_connection, MASTER_TASKS
     active_connection = websocket
@@ -39,7 +45,8 @@ async def handle_game_state(websocket):
                     bots[int(id)] = {
                         'position': {"x": info['x'], "y": info['y']},
                         'alive': info['alive'],
-                        'visible_players': info.get('visible_players', [])
+                        'visible_players': info.get('visible_players', []),
+                        'visible_corpses': info.get('visible_corpses', [])
                     }
                     bots[int(id)]['role'] = "imposter" if info['imposter'] else "crewmate"
             
@@ -51,8 +58,13 @@ async def handle_game_state(websocket):
                     "cooldowns": cooldowns,
                     "navigator": nav,
                     "manager": manager,
-                    "memory": bot_memories,
-                    "find_current_room": find_current_room
+                    "narrator": narrator,
+                    "bot_memories": bot_memories,
+                    "find_current_room": find_current_room,
+                    "active_sabotage": active_sabotage,
+                    "sabotage_being_fixed": sabotage_being_fixed,
+                    "meetings_remaining": meetings_remaining,
+                    "generate_snapshot": generate_snapshot
                 }
                 handle_events(event_context)
                 
@@ -87,14 +99,25 @@ async def handle_game_state(websocket):
                                 "locations": locations,
                                 "async": TASK_INFO[task_name]['async']
                             })
-                            vents[bot] = None
                     
                 with open("task_dump.json", "w") as f: json.dump(MASTER_TASKS, f, indent=4)
                 
                 for bot in assignments.keys():
-                    if bots[int(bot)]['role'] == "imposter":
-                        cooldowns['kill'][int(bot)] = time.time() + 10
-                        cooldowns['sabotage'][int(bot)] = time.time() + 10
+                    bot_id = int(bot)
+                    if bots[bot_id]['role'] == "imposter":
+                        cooldowns['kill'][bot_id] = time.time() + 10
+                        cooldowns['sabotage'][bot_id] = time.time() + 10
+                        vents[bot_id] = None
+                    
+                    state_snapshot = generate_snapshot(bot_id)
+                    asyncio.create_task(
+                        narrator.generate_action(
+                            bot_id=bot_id,
+                            state=state_snapshot,
+                            event_type="match_start"
+                        )
+                    )
+                
                             
             elif data.get('type') == "location":
                 print(data.get("current_location"))
@@ -152,6 +175,42 @@ def find_current_room(bot_id):
     current_node = nav.find_nearest_node(bot_pos["x"], bot_pos["y"])
     room_key = next(k for k in nav.rooms if current_node in k)
     return room_key
+
+def generate_snapshot(bot_id):
+    bot_info = bots[bot_id]
+    
+    k_time, s_time = cooldowns['kill'].get(bot_id), cooldowns['sabotage'].get(bot_id)
+    k_cd, s_cd = k_time - time.time() if k_time else None, s_time - time.time() if s_time else None
+    
+    state = {
+        "role": bot_info['role'],
+        "color": bot_colors[bot_id],
+        "alive": bot_info['alive'],
+        
+        "current_room": find_current_room(bot_id),
+        "visible_players": bot_info.get('visible_players', []),
+        "visible_corpses": bot_info.get('visible_corpses', []),
+        
+        "tasks": MASTER_TASKS.get(str(bot_id), []),
+        "memory_log": list(bot_memories[bot_id]),
+        "match_notes": "None.",
+        
+        "game_phase": manager.game_phase,
+        "voting_open": manager.voting_open,
+        
+        "in_vent": vents.get(bot_id) is not None,
+        "meetings_remaining": meetings_remaining[bot_id],
+        
+        "active_sabotage": active_sabotage['system'],
+        "sabotage_being_fixed": sabotage_being_fixed,
+        
+        "kill_cooldown": max(0, k_cd) if k_cd else None,
+        "sabotage_cooldown": max(0, s_cd) if s_cd else None,
+        
+        "has_voted": bot_id in manager.context.get("votes_cast", {})
+    }
+    
+    return state
         
 async def cli():
     global NODE_MAP, TASK_INFO, MASTER_TASKS
@@ -175,7 +234,8 @@ async def cli():
             "bots": bots,
             "vents": vents,
             "ROOM_NODES": ROOM_NODES,
-            "bot_memories": bot_memories
+            "bot_memories": bot_memories,
+            "sabotage_being_fixed": sabotage_being_fixed
         }
         
         await execute_command(command, parts, context)
@@ -199,10 +259,12 @@ async def execute_internally():
                     "bot_arrival_events": bot_arrival_events,
                     "cooldowns": cooldowns,
                     "navigator": nav,
-                    "bots": bots,
                     "vents": vents,
                     "ROOM_NODES": ROOM_NODES,
-                    "bot_memories": bot_memories
+                    "bot_memories": bot_memories,
+                    "sabotage_being_fixed": sabotage_being_fixed,
+                    "narrator": narrator,
+                    "generate_snapshot": generate_snapshot
                 }
         
         await execute_command(command, parts, context)

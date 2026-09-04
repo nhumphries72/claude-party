@@ -87,7 +87,7 @@ class Narrator:
         
     def _execute_failsafe(self, bot_id, state):
         if self.manager.game_phase == "meeting":
-            self.manager.round_responses.put_nowait({"bot_id": bot_id, "wait": True})
+            self.manager.response_queue.put_nowait({"bot_id": bot_id, "wait": True})
         else:
             self.command_queue.put_nowait(f"wait {bot_id} 5")
             
@@ -179,10 +179,20 @@ class Narrator:
                 
     def _get_allowed_command_keys(self, state):
         keys = ["wait"]
+        
         if self.manager.game_phase == "meeting":
+            if not state.get('alive'): return keys
             keys.append("chat")
-            if self.manager.voting_open:
+            if self.manager.voting_open and not state.get("has_voted"):
                 keys.append("vote")
+            return keys
+        
+        if not state.get('alive'):
+            keys.append('move')
+            if len(state.get('tasks', [])) > 0:
+                keys.append('task')
+            if state.get('role') == "imposter":
+                keys.append('sabotage')
             return keys
         
         if not state.get("in_vent"): keys.append("move")
@@ -192,6 +202,69 @@ class Narrator:
         keys.append("report")
         
         return keys
+    
+    def _get_available_command_docs(self, state):
+        
+        allowed_keys = self._get_allowed_command_keys(state)
+        formatted_docs = []
+        
+        doc_kwargs = {
+            "valid_rooms": ", ".join(list(ROOM_ALIASES.keys())),
+            "active_sabotage": state.get("active_sabotage", "None")
+        }
+        
+        for key in allowed_keys:
+            raw_doc = manifest.COMMAND_DOCS.get(key)
+            if raw_doc:
+                formatted_docs.append(raw_doc.format(**doc_kwargs))
+                
+        return formatted_docs
+    
+    def _compile_prompt(self, bot_id, state, event_type, event_kwargs, error_message=None):
+        
+        role = state.get('role')
+        identity = manifest.IDENTITY.get(role).format(bot_id=bot_id, color=state.get('color'))
+        task_list_str = "\n".join([f"{i+1}. {t['task']}" for i, t in enumerate(state.get('tasks', []))])
+        memory_str = "\n".join(state.get('memory_log', []))
+        current_status = "Alive" if state.get("alive") else "Dead"
+        
+        k_cd = state.get('kill_cooldown')
+        s_cd = state.get('sabotage_cooldown')
+        cooldown_text = ""
+        if state.get('role') == "imposter":
+            k_str = f"{int(k_cd)}s" if k_cd else "Ready"
+            s_str = f"{int(s_cd)}s" if s_cd else "Ready"
+            cooldown_text = f"Kill Cooldown: {k_str} | Sabotage Cooldown: {s_str}"
+        
+        state_block = manifest.STATE.format(
+            current_room = state.get("current_room"),
+            status = current_status,
+            visible_players = ", ".join([str(p) for p in state.get("visible_players", [])]),
+            visible_corpses = ", ".join([str(c) for c in state.get("visible_corpses", [])]),
+            active_sabotage = state.get('active_sabotage') or 'None',
+            task_list = task_list_str if task_list_str else "All tasks complete.",
+            meetings_remaining = state.get('meetings_remaining'),
+            cooldown_text = cooldown_text,
+            memory_log = memory_str if memory_str else "No recent memories.",
+            match_notes = state.get("match_notes", "None.")
+        )
+        
+        if error_message:
+            event_str = manifest.EVENTS["error"].format(error_message=error_message)
+        else:
+            raw_event = manifest.EVENTS.get(event_type, "<event>What is your next move?</event>")
+            try:
+                event_str = raw_event.format(**event_kwargs)
+            except KeyError as e:
+                print(f"Missing kwarg for event {event_type}: {e}")
+                event_str = raw_event
+        
+        command_docs = self._get_available_command_docs(state)
+        rules_block = "<rules>\nYou must output exactly one action using the strict XML formats below:\n\n"
+        rules_block += command_docs
+        rules_block += "\n</rules>"
+        
+        return f"{identity}\n\n{state_block}\n\n{event_str}\n\n{rules_block}"
         
         
         

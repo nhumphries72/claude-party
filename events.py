@@ -7,6 +7,11 @@ def _handle_arrived(bot_id, data, ctx):
         ctx['bot_arrival_events'][bot_id].set()
     room = ctx['find_current_room'](bot_id)
     ctx['bot_memories'][bot_id].append(f"Arrived at {room}")
+    
+    if bot_id not in ctx['active_actions']:
+        return {"current_room": room}
+    else:
+        return None
 
 def _handle_kill_complete(bot_id, data, ctx):
     target_id = data.get('target_id')
@@ -14,21 +19,48 @@ def _handle_kill_complete(bot_id, data, ctx):
     
     if bot_id in ctx['active_actions']: 
         del ctx['active_actions'][bot_id]
+    
+    if target_id in ctx['active_actions']:
+        ctx['active_actions'][target_id].cancel()
+        del ctx['active_actions'][target_id]
         
     ctx['cooldowns']['kill'][bot_id] = time.time() + 45
     ctx['bot_memories'][bot_id].append(f"Killed {target_id}")
     ctx['bot_memories'][target_id].append(f"Bot {bot_id} killed you")
+    ctx['bots'][target_id]['alive'] = False
+    
+    target_state = ctx['generate_snapshot'](target_id)
+    asyncio.create_task(
+        ctx['narrator'].generate_action(
+            bot_id=target_id,
+            state=target_state,
+            event_type="death",
+            event_kwargs={}
+        )
+    )
+    
+    return {"target_id": target_id}
 
 def _handle_meeting_trigger(bot_id, data, ctx):
     event = data.get("event_type")
     victim_id = data.get("victim_id") if event == "report" else None
     
-    asyncio.create_task(ctx['manager'].start_meeting(bot_id, victim_id))
+    asyncio.create_task(
+        ctx['manager'].start_meeting(
+            caller_id=bot_id,
+            victim_id=victim_id,
+            narrator=ctx['narrator'],
+            snapshot_func=ctx['generate_snapshot']
+        )
+    )
     
     if event == "emergency_meeting":
         ctx['bot_memories'][bot_id].append("Called an emergency meeting")
+        ctx['meetings_remaining'][bot_id] -= 1
     else:
         ctx['bot_memories'][bot_id].append(f"Reported bot {victim_id}'s body")
+        
+    return None
 
 def _handle_sabotage(bot_id, data, ctx):
     system, room = data.get('system'), data.get('room')
@@ -39,33 +71,62 @@ def _handle_sabotage(bot_id, data, ctx):
         asyncio.create_task(lock_doors(room, ctx['navigator']))
         
     ctx['bot_memories'][bot_id].append(f"Sabotaged the {system} system")
+    ctx['active_sabotage']['system'] = system
+    return {}
     
 def _handle_task(bot_id, data, ctx):
     print(f"Bot {bot_id} completed {data.get('task_name')}")
     ctx['bot_memories'][bot_id].append(f"Finished task {data.get('task_name')}")
+    return {}
     
 def _handle_corpse_spotted(bot_id, data, ctx):
-    ctx['bot_memories'][bot_id].append(f"Spotted bot {data.get('corpse_id')}'s body")
+    corpse_id = data.get('corpse_id')
+    
+    last_memory = ctx['bot_memories'][bot_id][-1] if ctx['bot_memories'][bot_id] else ""
+    if f"Killed {corpse_id}" in last_memory: return None
+    
+    ctx['bot_memories'][bot_id].append(f"Spotted bot {corpse_id}'s body")
+    return {}
     
 def _handle_witness(bot_id, data, ctx):
     ctx['bot_memories'][bot_id].append(f"Witnessed bot {data.get('imposter_id')} {data.get('action')}")
+    return {}
     
 def _handle_vent(bot_id, data, ctx):
     ctx['bot_memories'][bot_id].append(f"Traveled to {ctx['find_current_room'](bot_id)} through a vent")
+    return {}
+    
+def _handle_fix(bot_id, data, ctx):
+    ctx['bot_memories'][bot_id].append(f"Fixed a {data.get('system')} sabotage")
+    ctx['active_sabotage']['system'] = None
+    ctx['sabotage_being_fixed'].remove((data.get('system'), data.get('panel')))
+    return {}
     
 def handle_events(event_context):
     data = event_context.get('data')
     event = data.get('event_type')
     bot_id = int(data.get('bot_id'))
+    narrator = event_context.get('narrator')
     
     handler = EVENT_HANDLERS.get(event)
     
     if handler:
-        handler(bot_id, data, event_context)
+        event_kwargs = handler(bot_id, data, event_context)
+        if event_kwargs is not None:
+            state = event_context.get('generate_snapshot')(bot_id) 
+            asyncio.create_task(
+            narrator.generate_action(
+                bot_id=bot_id,
+                state=state,
+                event_type=event,
+                event_kwargs=event_kwargs
+                )
+            )
     else:
         print(f"Unknown event: {event}")
         
 EVENT_HANDLERS = {
+    "arrived": _handle_arrived,
     "kill_complete": _handle_kill_complete,
     "emergency_meeting": _handle_meeting_trigger,
     "report": _handle_meeting_trigger,
@@ -73,7 +134,8 @@ EVENT_HANDLERS = {
     "task_complete": _handle_task,
     "corpse_spotted": _handle_corpse_spotted,
     "witness": _handle_witness,
-    "exit_vent": _handle_vent
+    "exit_vent": _handle_vent,
+    "fix_successful": _handle_fix
 }
         
     

@@ -15,11 +15,16 @@ IDENTITY = {
 
 STATE = """<context>
 Location: {current_room}
+Status: {status}
 Visible players in room: {visible_players}
 Visible corpses: {visible_corpses}
+Active Emergency: {active_sabotage}
 
 Your tasks (if you are an Imposter, these are fake tasks):
 {task_list}
+
+Emergency Meetings Remaining: {meetings_remaining}
+{cooldown_text}
 
 Recent memory:
 {memory_log}
@@ -39,15 +44,63 @@ EVENTS = {
     </event>""",
     
     "task_progress": """<event>
-    You completed a stage of your task. What is your next move?
+    You completed a stage of your task: {task_name}. What is your next move?
     </event>""",
     
     "task_complete": """<event>
-    You fully completed your task. What is your next move?
+    You fully completed your task: {task_name}. What is your next move?
+    </event>""",
+    
+    "kill_complete": """<event>
+    You killed Bot {target_id}. You are now standing above a corpse. What is your next move?
+    </event>""",
+    
+    "sabotage_successful": """<event>
+    You triggered a sabotage. You can help fix the sabotage you started, or use the opportunity to do something else. What is your next move?
+    </event>""",
+    
+    "corpse_spotted": """<event>
+    You spotted a corpse. What is your next move?
+    </event>""",
+    
+    "witness": """<event>
+    You witnessed Bot {imposter_id} {action}. What is your next move?
+    </event>""",
+    
+    "enter_vent": """<event>
+    You entered a vent into {current_room}. What is your next move?
+    </event>""",
+    
+    "vent_move": """<event>
+    You are now in the vent in {current_room}. What is your next move?
+    </event>""",
+    
+    "exit_vent": """<event>
+    You exited the vent into {current_room}. What is your next move?
+    </event>""",
+    
+    "fix_successful": """<event>
+    You repaired a sabotage. What is your next move?
     </event>""",
     
     "interrupted": """<event>
     You were interrupted by {interruption_reason}. What is your next move?
+    </event>""",
+    
+    "meeting_turn": """<event>
+    Emergency meeting. Round {round_num}.
+    Caller: Bot {caller_id}
+    Reason: {reason}
+    
+    Chat History: {chat_history}
+    
+    Voting is currently: {voting_status}
+    What do you say or do?
+    </event>""",
+    
+    "death": """<event>
+    You are dead. You are now a ghost. You cannot be seen by living players, participate in meetings, murder other players, or fix sabotages. However, you can still complete tasks if you are a crewmate, and begin sabotages if you are an imposter.
+    Dead crewmates must still complete their tasks to win.
     </event>""",
     
     "error": """<event>
@@ -85,8 +138,14 @@ If sabotaging doors, append the room (e.g., <action>sabotage doors Storage</acti
 Enter a vent in your current room. If in Navigation or Reactor, specify north/south (e.g., <action>vent enter Navigation north</action>).""",
 
     "vent_move": """<action>vent move [room]</action>
-Move to a connected vent.""",
+Move to a connected vent. Connected vents: {connected_vents}""",
 
     "vent_exit": """<action>vent exit</action>
-Exit the vent system into your current room."""
+Exit the vent system into your current room.""",
+
+    "chat": """<action>chat [message]</action>
+Broadcast a message to all players.""",
+
+    "vote": """<action>vote [bot_id or "skip"]</action>
+Vote to eject a player, or vote "skip" if you aren't suspicious of anyone."""
 }

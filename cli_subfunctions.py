@@ -47,6 +47,7 @@ async def fix(parts, context):
     print(f"Dispatching bot {bot_id} to fix {system}")
     
     active_actions[bot_id] = asyncio.create_task(run_fix_sequence(bot_id, system, panel, context))
+    context.get('sabotage_being_fixed').append((system, panel))
     
 async def run_fix_sequence(bot_id, system, panel, context):
     active_connection = context.get('active_connection')
