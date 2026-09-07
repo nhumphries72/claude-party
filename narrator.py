@@ -170,7 +170,7 @@ class Narrator:
                 elif cmd == "wait":
                     turn_data["wait"] = True
             
-            self.manager.round_responses.put_nowait(turn_data)
+            self.manager.response_queue.put_nowait(turn_data)
         
         else:
             for cmd, arg in valid_actions:
@@ -225,7 +225,19 @@ class Narrator:
         
         role = state.get('role')
         identity = manifest.IDENTITY.get(role).format(bot_id=bot_id, color=state.get('color'))
-        task_list_str = "\n".join([f"{i+1}. {t['task']} (Location: {t['room']})" for i, t in enumerate(state.get('tasks', []))])
+        
+        task_strings = []
+        for i, t in enumerate(state.get('tasks', [])):
+            base_str = f"{i+1}. {t['task']} (Location: {t['room']})"
+            if t.get('cooldown_remaining'): base_str += f". {t['cooldown_remaining']} seconds until this task can be completed."
+            task_strings.append(base_str)
+        task_list_str = "\n".join(task_strings)
+        
+        imposter_str = ""
+        if state.get('role') == "imposter":
+            teammates = state.get('other_imposters')
+            imposter_str = f"Other imposters: {teammates}\n"    
+        
         memory_str = "\n".join(state.get('memory_log', []))
         current_status = "Alive" if state.get("alive") else "Dead"
         
@@ -243,6 +255,7 @@ class Narrator:
             visible_players = ", ".join([str(p) for p in state.get("visible_players", [])]),
             visible_corpses = ", ".join([str(c) for c in state.get("visible_corpses", [])]),
             active_sabotage = state.get('active_sabotage') or 'None',
+            imposter_str = imposter_str,
             task_list = task_list_str if task_list_str else "All tasks complete.",
             meetings_remaining = state.get('meetings_remaining'),
             cooldown_text = cooldown_text,

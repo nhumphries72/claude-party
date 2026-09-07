@@ -92,6 +92,7 @@ async def run_move_sequence(bot_id, destination, context):
     
     try:
         await traverse_path(bot_id, destination)
+        completed = True
     except asyncio.CancelledError:
         print(f"Bot {bot_id}'s movement was interrupted")
         bot_memories[bot_id].append(f"Interrupted while moving to {destination}")
@@ -99,16 +100,16 @@ async def run_move_sequence(bot_id, destination, context):
     finally:
         if bot_id in active_actions: del active_actions[bot_id]
         
-    if completed and narrator and generate_snapshot:
-        state = generate_snapshot(bot_id)
-        asyncio.create_task(
-            narrator.generate_action(
-                bot_id=bot_id,
-                state=state,
-                event_type="arrived",
-                event_kwargs={"current_room": state.get('current_room')}
+        if completed and narrator and generate_snapshot:
+            state = generate_snapshot(bot_id)
+            asyncio.create_task(
+                narrator.generate_action(
+                    bot_id=bot_id,
+                    state=state,
+                    event_type="arrived",
+                    event_kwargs={"current_room": state.get('current_room')}
+                )
             )
-        )
         
 async def prepare_task(parts, context):
     MASTER_TASKS = context.get('MASTER_TASKS')

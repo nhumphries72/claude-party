@@ -19,6 +19,7 @@ Status: {status}
 Visible players in room: {visible_players}
 Visible corpses: {visible_corpses}
 Active Emergency: {active_sabotage}
+{imposter_str}
 
 Your tasks (if you are an Imposter, these are fake tasks):
 {task_list}
@@ -52,7 +53,7 @@ EVENTS = {
     </event>""",
     
     "task_faked": """<event>
-    You pretended to completed the task: {task_name}. What is your next move?
+    You pretended to complete the task: {task_name}. What is your next move?
     </event>""",
     
     "kill_complete": """<event>
@@ -62,7 +63,7 @@ EVENTS = {
     "sabotage_successful": """<event>
     You triggered a sabotage. You can help fix the sabotage you started, or use the opportunity to do something else. What is your next move?
     </event>""",
-    
+
     "corpse_spotted": """<event>
     You spotted a corpse. What is your next move?
     </event>""",
@@ -125,8 +126,8 @@ Work on a task from your list. You will automatically route there if needed.""",
     "meeting": """<action>meeting</action>
 Call an emergency meeting. You will automatically route to the Cafeteria. You can only do this one time.""",
     
-    "fix": """<action>fix</action>
-Automatically route to and repair the active sabotage ({active_sabotage}).""",
+    "fix": """<action>fix [system]</action>
+Automatically route to and repair the system being sabotaged.""",
 
     "report": """<action>report</action>
 Report the corpse you just saw (or created).""",
@@ -135,7 +136,7 @@ Report the corpse you just saw (or created).""",
 Hunt down and murder a Crewmate. Hunting crewmates that are not currently in sight may result in unexpected witnesses.""",
 
     "sabotage": """<action>sabotage [system]</action>
-[system] must be one of: Reactor, LifeSupp, Lights, Comms, or Doors.
+[system] must be one of: Lights, Comms, or Doors.
 If sabotaging doors, append the room (e.g., <action>sabotage doors Storage</action>).""",
 
     "vent_enter": """<action>vent enter [room]</action>

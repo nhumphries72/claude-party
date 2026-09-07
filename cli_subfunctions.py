@@ -12,6 +12,8 @@ fix_nodes = {
 }
 
 async def begin(parts, context):
+    if context.get('active_sabotage')['system'] is not None: return
+    
     active_connection = context.get('active_connection')
     cooldowns = context.get('cooldowns')
     
@@ -36,6 +38,7 @@ async def begin(parts, context):
         "room": room
     }
     await active_connection.send(json.dumps(payload))
+    context['active_sabotage']['system'] = system
     
 async def fix(parts, context):
     active_actions = context.get('active_actions')
@@ -71,6 +74,7 @@ async def run_fix_sequence(bot_id, system, panel, context):
         }
         await active_connection.send(json.dumps(payload))
         print(f"bot {bot_id} successfully repaired {system}")
+        context['active_sabotage']['system'] = None
     
     except asyncio.CancelledError:
         print(f"Bot {bot_id}'s repair sequence was interrupted")

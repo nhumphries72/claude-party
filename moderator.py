@@ -32,12 +32,17 @@ sabotage_being_fixed = []
 async def handle_game_state(websocket):
     global active_connection, MASTER_TASKS
     active_connection = websocket
+    manager.connection = websocket
     print(f"Unity client connected")
     time.sleep(0.005)
     
     try:
         async for message in websocket:
-            data = json.loads(message)
+            try:
+                data = json.loads(message)
+            except json.JSONDecodeError:
+                print(f"Skipping corrupted packing from Unity: {message}")
+                continue
             
             if data.get('type') == "telemetry":
                 players = data.get("players")
@@ -64,7 +69,9 @@ async def handle_game_state(websocket):
                     "active_sabotage": active_sabotage,
                     "sabotage_being_fixed": sabotage_being_fixed,
                     "meetings_remaining": meetings_remaining,
-                    "generate_snapshot": generate_snapshot
+                    "generate_snapshot": generate_snapshot,
+                    "bots": bots,
+                    "is_dead": is_dead
                 }
                 handle_events(event_context)
                 
@@ -127,6 +134,9 @@ async def handle_game_state(websocket):
     except websockets.exceptions.ConnectionClosed:
         print(f"Unity client disconnected")
         time.sleep(0.005)
+        
+def is_dead(bot_id):
+    return bots[bot_id]['alive'] == False
         
 async def traverse_path(bot_id, target_node):
     try:
@@ -193,9 +203,24 @@ def generate_snapshot(bot_id):
         t_data = t.copy()
         if t.get('locations'):
             target_node = t['locations'][0]
-            room = next((k for k in nav.rooms if target_node in nav.rooms[k]))
+            
+            try:
+                room = next((k for k in nav.rooms if target_node in nav.rooms[k]))
+            except StopIteration:
+                print(f"\nMapping error: {target_node} is not assigned to a room")
+                room = 'Unknown'
+                
             t_data['room'] = room
+        
+        if 'cooldown_until' in t:
+            remaining = int(t['cooldown_until'] - time.time())
+            if remaining > 0: t_data['cooldown_remaining'] = remaining
+        
         tasks_with_rooms.append(t_data)
+        
+    other_imposters = ""
+    if bots[bot_id]['role'] == "imposter":
+        other_imposters = ", ".join(f"Bot {bot}" for bot in bots if bots[bot]['role'] == "imposter" and bot != bot_id)
     
     state = {
         "role": bot_info['role'],
@@ -222,7 +247,9 @@ def generate_snapshot(bot_id):
         "kill_cooldown": max(0, k_cd) if k_cd else None,
         "sabotage_cooldown": max(0, s_cd) if s_cd else None,
         
-        "has_voted": bot_id in manager.context.get("votes_cast", {})
+        "has_voted": bot_id in manager.context.get("votes_cast", {}),
+        
+        "other_imposters": other_imposters
     }
     
     return state
@@ -277,6 +304,7 @@ async def execute_internally():
                     "vents": vents,
                     "ROOM_NODES": ROOM_NODES,
                     "bot_memories": bot_memories,
+                    "active_sabotage": active_sabotage,
                     "sabotage_being_fixed": sabotage_being_fixed,
                     "narrator": narrator,
                     "generate_snapshot": generate_snapshot

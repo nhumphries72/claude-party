@@ -13,7 +13,7 @@ def _handle_arrived(bot_id, data, ctx):
     return None
 
 def _handle_kill_complete(bot_id, data, ctx):
-    target_id = data.get('target_id')
+    target_id = int(data.get('target_id'))
     print(f"Bot {target_id} was murdered by bot {bot_id}")
     
     if bot_id in ctx['active_actions']: 
@@ -79,6 +79,7 @@ def _handle_task(bot_id, data, ctx):
     return None
     
 def _handle_corpse_spotted(bot_id, data, ctx):
+    if ctx['is_dead'](bot_id): return None
     corpse_id = data.get('corpse_id')
     
     last_memory = ctx['bot_memories'][bot_id][-1] if ctx['bot_memories'][bot_id] else ""
@@ -88,8 +89,13 @@ def _handle_corpse_spotted(bot_id, data, ctx):
     return {}
     
 def _handle_witness(bot_id, data, ctx):
-    ctx['bot_memories'][bot_id].append(f"Witnessed bot {data.get('imposter_id')} {data.get('action')}")
-    return {}
+    imposter_id, action = data.get('imposter_id'), data.get('action')
+    if ctx['is_dead'](bot_id): return None
+    ctx['bot_memories'][bot_id].append(f"Witnessed bot {imposter_id} {action}")
+    return {
+        "imposter_id": imposter_id,
+        "action": action
+    }
     
 def _handle_vent(bot_id, data, ctx):
     ctx['bot_memories'][bot_id].append(f"Traveled to {ctx['find_current_room'](bot_id)} through a vent")
@@ -98,7 +104,8 @@ def _handle_vent(bot_id, data, ctx):
 def _handle_fix(bot_id, data, ctx):
     ctx['bot_memories'][bot_id].append(f"Fixed a {data.get('system')} sabotage")
     ctx['active_sabotage']['system'] = None
-    ctx['sabotage_being_fixed'].remove((data.get('system'), data.get('panel')))
+    if (data.get('system'), data.get('panel')) in ctx['sabotage_being_fixed']:
+        ctx['sabotage_being_fixed'].remove((data.get('system'), data.get('panel')))
     return {}
     
 def handle_events(event_context):

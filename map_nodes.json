@@ -208,6 +208,11 @@
             "x": 2.71,
             "y": -7.17
         },
+        "admin_data_upload":
+        {
+            "x": 2.47,
+            "y": -6.5
+        },
         "admin_overview": {
             "x": 2.71,
             "y": -8.51
@@ -344,7 +349,7 @@
             "x": -21.9,
             "y": -2.52
         },
-        "reactor_north_vent": {
+        "reactor_north_vent": { 
             "x": -21.32,
             "y": -2.53
         },
@@ -427,6 +432,10 @@
         "security_wiring": {
             "x": -15.55,
             "y": -5.15
+        },
+        "security_accept_power": {
+            "x": -12.26,
+            "y": -3.15
         },
         "navigation_accept_power": {
             "x": 16.04,
@@ -921,6 +930,14 @@
         [
             "admin_oxygen",
             "admin_east"
+        ],
+        [
+            "security_accept_power",
+            "security_northeast"
+        ],
+        [
+            "admin_data_upload",
+            "admin_main"
         ]
     ],
     "vent_edges": [
@@ -1015,7 +1032,8 @@
             "admin_overview",
             "admin_oxygen",
             "admin_vent",
-            "admin_wiring"
+            "admin_wiring",
+            "admin_data_upload"
         ],
         "Shields":
         [
@@ -1084,7 +1102,8 @@
             "security_northeast",
             "security_south",
             "security_terminal",
-            "security_vent"
+            "security_vent",
+            "security_accept_power"
         ],
         "UpperEngine":
         [

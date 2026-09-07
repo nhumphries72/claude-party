@@ -86,7 +86,7 @@ class MeetingManager:
                     )
                 )
             
-            state_changed = await self._poll_round(self.voting_open, timeout=15.0)
+            state_changed = await self._poll_round(timeout=15.0)
             
             if len(self.context["votes_cast"]) == len(self.context["eligible_voters"]):
                 print("All bots have voted. Concluding meeting.")

@@ -142,7 +142,7 @@
         ],
         "async": false,
         "random": false,
-        "locations": ["admin_data_download"]
+        "locations": ["admin_data_upload"]
     },
     "StabilizeSteeringTask": {
         "duration": [
@@ -190,7 +190,7 @@
         ],
         "async": false,
         "random": false,
-        "locations": ["admin_data_download"]
+        "locations": ["admin_data_upload"]
     },
     "DivertSecurityPower": {
         "duration": [
@@ -208,7 +208,7 @@
         ],
         "async": false,
         "random": false,
-        "locations": ["admin_data_download"]
+        "locations": ["admin_data_upload"]
     },
     "DivertLifeSuppPower": {
         "duration": [
@@ -226,7 +226,7 @@
         ],
         "async": false,
         "random": false,
-        "locations": ["admin_data_download"]
+        "locations": ["admin_data_upload"]
     },
     "DivertLeftEnginePower": {
         "duration": [
