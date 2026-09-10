@@ -18,7 +18,7 @@ namespace Amogus
         public float x {get; set;}
         public float y {get; set;}
         public string task_name {get; set;}
-        public byte target_id {get; set;}
+        public int target_id {get; set;}
         public string sub_action {get; set;}
         public string system {get; set;}
         public string panel {get; set;}
@@ -133,8 +133,8 @@ namespace Amogus
                 }
                 catch (Exception ex)
                 {
-                    Plugin.Instance.Log.LogInfo($"WebSockets error: {ex.Message}");
-                    break;
+                    Plugin.Instance.Log.LogError($"WebSockets error: {ex.Message}");
+                    continue;
                 }
             }
         }

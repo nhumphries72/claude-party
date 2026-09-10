@@ -112,7 +112,7 @@ class Narrator:
         parts = action_string.split(maxsplit=1)
         cmd = parts[0].lower()
         arg = parts[1] if len(parts) > 1 else ""
-        arg_lower = arg.lower().strip()
+        arg_lower = arg.lower().strip().replace('[', '').replace(']', '')
         
         if cmd == "move":
             arg = ROOM_ALIASES.get(arg_lower, arg)

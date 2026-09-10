@@ -80,6 +80,11 @@ def _handle_task(bot_id, data, ctx):
     
 def _handle_corpse_spotted(bot_id, data, ctx):
     if ctx['is_dead'](bot_id): return None
+    
+    if bot_id in ctx['active_actions']:
+        ctx['active_actions'][bot_id].cancel()
+        del ctx['active_actions'][bot_id]
+    
     corpse_id = data.get('corpse_id')
     
     last_memory = ctx['bot_memories'][bot_id][-1] if ctx['bot_memories'][bot_id] else ""
@@ -91,6 +96,11 @@ def _handle_corpse_spotted(bot_id, data, ctx):
 def _handle_witness(bot_id, data, ctx):
     imposter_id, action = data.get('imposter_id'), data.get('action')
     if ctx['is_dead'](bot_id): return None
+    
+    if bot_id in ctx['active_actions']:
+        ctx['active_actions'][bot_id].cancel()
+        del ctx['active_actions'][bot_id]
+    
     ctx['bot_memories'][bot_id].append(f"Witnessed bot {imposter_id} {action}")
     return {
         "imposter_id": imposter_id,
@@ -107,11 +117,18 @@ def _handle_fix(bot_id, data, ctx):
     if (data.get('system'), data.get('panel')) in ctx['sabotage_being_fixed']:
         ctx['sabotage_being_fixed'].remove((data.get('system'), data.get('panel')))
     return {}
+
+def _handle_message(bot_id, data, ctx):
+    return None
+
+def _handle_end_meeting(bot_id, data, ctx):
+    print("Meeting concluded successfully")
+    return None
     
 def handle_events(event_context):
     data = event_context.get('data')
     event = data.get('event_type')
-    bot_id = int(data.get('bot_id'))
+    bot_id = int(data.get('bot_id', 15))
     narrator = event_context.get('narrator')
     
     handler = EVENT_HANDLERS.get(event)
@@ -141,7 +158,9 @@ EVENT_HANDLERS = {
     "corpse_spotted": _handle_corpse_spotted,
     "witness": _handle_witness,
     "exit_vent": _handle_vent,
-    "fix_successful": _handle_fix
+    "fix_successful": _handle_fix,
+    "message": _handle_message,
+    "end_meeting": _handle_end_meeting
 }
         
     

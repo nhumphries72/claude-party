@@ -24,7 +24,7 @@ Active Emergency: {active_sabotage}
 Your tasks (if you are an Imposter, these are fake tasks):
 {task_list}
 
-Emergency Meetings Remaining: {meetings_remaining}
+Emergency Meetings Remaining: {meetings_remaining}. Each player only gets one.
 {cooldown_text}
 
 Recent memory:
@@ -94,6 +94,7 @@ EVENTS = {
     
     "meeting_turn": """<event>
     Emergency meeting. Round {round_num}.
+    {meeting_announcement}
     Caller: Bot {caller_id}
     Reason: {reason}
     
@@ -151,6 +152,6 @@ Exit the vent system into your current room.""",
     "chat": """<action>chat [message]</action>
 Broadcast a message to all players.""",
 
-    "vote": """<action>vote [bot_id or "skip"]</action>
-Vote to eject a player, or vote "skip" if you aren't suspicious of anyone."""
+    "vote": """<action>vote TARGET_ID</action>
+Vote to eject a player, or replace TARGET_ID with "skip" if you aren't suspicious of anyone."""
 }

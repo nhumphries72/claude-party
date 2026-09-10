@@ -45,7 +45,7 @@ namespace Amogus
                 case "hunt":
                     WebSocketManager.MainThreadQueue.Enqueue(() =>
                     {
-                        Plugin.ActiveHunts[cmd.bot_id] = cmd.target_id;
+                        Plugin.ActiveHunts[cmd.bot_id] = (byte)cmd.target_id;
                     });
                     break;
                 case "report":
@@ -74,7 +74,7 @@ namespace Amogus
                             Plugin.Instance.Log.LogInfo($"Report request denied; bot {cmd.bot_id} cannot see any bodies");
                         }
                     });
-                    break;
+                    break; 
                 case "sabotage":
                     WebSocketManager.MainThreadQueue.Enqueue(() =>
                     {
@@ -97,7 +97,13 @@ namespace Amogus
                             }
 
                             Plugin.Instance.Log.LogInfo($"Bot {cmd.bot_id} sent a message");
-                            string payload = $"{{\"type\": \"event\", \"event_type\": \"message\", \"bot_id\": {cmd.bot_id}, \"content\": {cmd.message}}}";
+                            string payload = $"{{\"type\": \"event\", \"event_type\": \"message\", \"bot_id\": {cmd.bot_id}, \"content\": \"{
+                                cmd.message
+                                .Replace("\\", "\\\\")
+                                .Replace("\"", "\\\"")
+                                .Replace("\r", "")
+                                .Replace("\n", "\\n")
+                                }\"}}";
                             WebSocketManager.Send(payload);
                         }
                     });
@@ -108,7 +114,7 @@ namespace Amogus
                         PlayerControl bot = Plugin.IDToBot(cmd.bot_id);
                         if (bot == null || bot.Data.IsDead || MeetingHud.Instance == null) return;
 
-                        byte voteTarget = cmd.target_id == 15 ? (byte)253 : cmd.target_id;
+                        byte voteTarget = (byte)cmd.target_id == 15 ? (byte)253 : (byte)cmd.target_id;
 
                         MeetingHud.Instance.CmdCastVote(cmd.bot_id, voteTarget);
 

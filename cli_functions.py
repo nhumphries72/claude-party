@@ -39,14 +39,16 @@ async def execute_command(cmd, parts, context):
         "chat": chat,
         "vote": vote,
         "proceed": proceed,
-        "vent": vent
+        "vent": vent,
+        "wait": wait_action,
+        "stop": stop_action
     }
     function = cmd_dict.get(cmd)
     
     if function:
         await function(parts, context)
     else:
-        print("Unknown command")
+        print(f"Unknown command: {cmd}")
 
 async def move(parts, context):
     active_actions = context.get('active_actions')
@@ -431,3 +433,14 @@ async def wait_action(parts, context):
             if bot_id in active_actions: del active_actions[bot_id]
             
     active_actions[bot_id] = asyncio.create_task(do_wait())
+    
+async def stop_action(parts, context):
+    bot_id = parts[0]
+    active_connection = context.get('active_connection')
+    
+    payload = {
+        "type": "command",
+        "action": "stop",
+        "bot_id": bot_id
+    }
+    await active_connection.send(json.dumps(payload))

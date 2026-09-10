@@ -1,6 +1,7 @@
 import asyncio
 import json
 import time
+import websockets
 
 class MeetingManager:
     def __init__(self, active_connection, bots, active_actions, bot_arrival_events):
@@ -8,6 +9,7 @@ class MeetingManager:
         self.bots = bots
         self.active_actions = active_actions
         self.bot_arrival_events = bot_arrival_events
+        self.known_dead = set()
         
         self.game_phase = "roaming"
         self.voting_open = False
@@ -22,6 +24,9 @@ class MeetingManager:
         self.narrator = narrator
         self.generate_snapshot = snapshot_func
         
+        for bot_id in self.bots:
+            self.narrator.command_queue.put_nowait(f"stop {bot_id}")
+        
         for bot_id, task in self.active_actions.items():
             task.cancel()
         self.active_actions.clear()
@@ -30,12 +35,22 @@ class MeetingManager:
             event.clear()
             
         living_bots = [bot_id for bot_id, info in self.bots.items() if info['alive']]
+        dead_bots = {bot_id for bot_id, info in self.bots.items() if not info['alive'] and info['role'] != "imposter"}
+        new_dead = dead_bots - self.known_dead
+        self.known_dead.update(new_dead)
+        if new_dead:
+            dead_str = ", ".join([f"Bot {b}" for b in new_dead])
+            meeting_announcement = f"Players who have died since last meeting: {dead_str}"
+        else:
+            meeting_announcement = "No players have died since the previous meeting."
+        
         self.context = {
             "caller_id": caller_id,
             "victim_id": victim_id,
             "chat_history": [],
             "votes_cast": {},
-            "eligible_voters": living_bots
+            "eligible_voters": living_bots,
+            "meeting_announcement": meeting_announcement
         }
         
         await self.run_lifecycle()
@@ -81,7 +96,8 @@ class MeetingManager:
                             "caller_id": self.context['caller_id'],
                             "reason": reason,
                             "chat_history": chat_log,
-                            "voting_status": voting_status
+                            "voting_status": voting_status,
+                            "meeting_announcement": self.context['meeting_announcement']
                         }
                     )
                 )
@@ -134,13 +150,17 @@ class MeetingManager:
                     message = turn_data["chat"]
                     self.context["chat_history"].append((bot_id, message))
                     state_changed = True
-                
-                    await self.connection.send(json.dumps({
-                        "type": "command",
-                        "action": "chat",
-                        "bot_id": bot_id,
-                        "message": message
-                    }))
+
+                    try:
+                        await self.connection.send(json.dumps({
+                            "type": "command",
+                            "action": "chat",
+                            "bot_id": bot_id,
+                            "message": message
+                        }))
+                    except websockets.exceptions.ConnectionClosed:
+                        print("Meeting interrupted: Unity disconnected")
+                        return False
                     
                 if turn_data.get("vote") and self.voting_open:
                     target = turn_data["vote"]
@@ -149,12 +169,16 @@ class MeetingManager:
                         self.context["votes_cast"][bot_id] = target
                         state_changed = True
                         
-                        await self.connection.send(json.dumps({
-                            "type": "command",
-                            "action": "vote",
-                            "bot_id": bot_id,
-                            "target_id": target
-                        }))
+                        try:
+                            await self.connection.send(json.dumps({
+                                "type": "command",
+                                "action": "vote",
+                                "bot_id": bot_id,
+                                "target_id": target
+                            }))
+                        except websockets.exceptions.ConnectionClosed:
+                            print("Meeting interrupted: Unity disconnected")
+                            return False
                         
             except asyncio.TimeoutError:
                 continue
