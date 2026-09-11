@@ -87,6 +87,12 @@ def _handle_corpse_spotted(bot_id, data, ctx):
     
     corpse_id = data.get('corpse_id')
     
+    if 'visible_corpses' not in ctx['bots'][bot_id]:
+        ctx['bots'][bot_id]['visible_corpses'] = []
+        
+    if corpse_id not in ctx['bots'][bot_id]['visible_corpses']:
+        ctx['bots'][bot_id]['visible_corpses'].append(corpse_id)
+    
     last_memory = ctx['bot_memories'][bot_id][-1] if ctx['bot_memories'][bot_id] else ""
     if f"Killed {corpse_id}" in last_memory: return None
     
@@ -124,6 +130,14 @@ def _handle_message(bot_id, data, ctx):
 def _handle_end_meeting(bot_id, data, ctx):
     print("Meeting concluded successfully")
     return None
+
+def _handle_report(bot_id, data, ctx):
+    victim = data.get('victim_id')
+    print(f"Bot {bot_id} reported bot {victim}'s body")
+    
+    asyncio.create_task(ctx['manager'].start_meeting(caller_id=bot_id, victim_id=victim, narrator=ctx['narrator'], snapshot_func=ctx['generate_snapshot']))
+    
+    return None
     
 def handle_events(event_context):
     data = event_context.get('data')
@@ -160,7 +174,8 @@ EVENT_HANDLERS = {
     "exit_vent": _handle_vent,
     "fix_successful": _handle_fix,
     "message": _handle_message,
-    "end_meeting": _handle_end_meeting
+    "end_meeting": _handle_end_meeting,
+    "report": _handle_report
 }
         
     

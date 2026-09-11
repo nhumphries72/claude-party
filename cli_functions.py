@@ -252,6 +252,10 @@ async def call_meeting(parts, context):
         active_actions[bot_id] = nav_task
         await nav_task
         
+        if context['active_sabotage']['system'] not in [None, 'doors']:
+            print(f"Bot {bot_id} cannot call a meeting during a sabotage")
+            return
+            
         payload = {"type": "command", "action": "call_meeting", "bot_id": bot_id}
         await active_connection.send(json.dumps(payload))
         
@@ -435,7 +439,7 @@ async def wait_action(parts, context):
     active_actions[bot_id] = asyncio.create_task(do_wait())
     
 async def stop_action(parts, context):
-    bot_id = parts[0]
+    bot_id = int(parts[0])
     active_connection = context.get('active_connection')
     
     payload = {

@@ -53,6 +53,7 @@ class MeetingManager:
             "meeting_announcement": meeting_announcement
         }
         
+        await asyncio.sleep(4)
         await self.run_lifecycle()
         
     async def run_lifecycle(self):
@@ -86,6 +87,9 @@ class MeetingManager:
             
             for bot_id in self.context["eligible_voters"]:
                 state_snapshot = self.generate_snapshot(bot_id)
+                has_voted = bot_id in self.context['votes_cast']
+                state_snapshot['has_voted'] = has_voted
+                if has_voted: voting_status = "You have already cast your vote."
                 asyncio.create_task(
                     self.narrator.generate_action(
                         bot_id=bot_id,
@@ -124,12 +128,15 @@ class MeetingManager:
             round_num += 1
         
         print("\nMeeting concluded.")
-        self.game_phase = "roaming"
         
         await self.connection.send(json.dumps({
             "type": "command",
             "action": "proceed"
         }))
+        
+        print("Waiting for ejection animation to complete")
+        await asyncio.sleep(12.0)
+        self.game_phase = "roaming"
             
     async def _poll_round(self, timeout):
         expected_reponses = len(self.context["eligible_voters"])
@@ -164,9 +171,10 @@ class MeetingManager:
                     
                 if turn_data.get("vote") and self.voting_open:
                     target = turn_data["vote"]
+                    clean_target = 15 if target == "skip" else int(target)
                     
                     if bot_id not in self.context["votes_cast"]:
-                        self.context["votes_cast"][bot_id] = target
+                        self.context["votes_cast"][bot_id] = clean_target
                         state_changed = True
                         
                         try:
@@ -174,7 +182,7 @@ class MeetingManager:
                                 "type": "command",
                                 "action": "vote",
                                 "bot_id": bot_id,
-                                "target_id": target
+                                "target_id": clean_target
                             }))
                         except websockets.exceptions.ConnectionClosed:
                             print("Meeting interrupted: Unity disconnected")

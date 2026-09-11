@@ -125,7 +125,7 @@ Stand still for the specified duration.""",
 Work on a task from your list. You will automatically route there if needed.""",
     
     "meeting": """<action>meeting</action>
-Call an emergency meeting. You will automatically route to the Cafeteria. You can only do this one time.""",
+Call an emergency meeting. You will automatically route to the Cafeteria. You can only do this one time. You cannot call a meeting during an active sabotage.""",
     
     "fix": """<action>fix [system]</action>
 Automatically route to and repair the system being sabotaged.""",
