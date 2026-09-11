@@ -138,6 +138,9 @@ def _handle_report(bot_id, data, ctx):
     asyncio.create_task(ctx['manager'].start_meeting(caller_id=bot_id, victim_id=victim, narrator=ctx['narrator'], snapshot_func=ctx['generate_snapshot']))
     
     return None
+
+def _handle_vote(bot_id, data, ctx):
+    return None
     
 def handle_events(event_context):
     data = event_context.get('data')
@@ -175,7 +178,8 @@ EVENT_HANDLERS = {
     "fix_successful": _handle_fix,
     "message": _handle_message,
     "end_meeting": _handle_end_meeting,
-    "report": _handle_report
+    "report": _handle_report,
+    "vote": _handle_vote
 }
         
     

@@ -136,7 +136,41 @@ class MeetingManager:
         
         print("Waiting for ejection animation to complete")
         await asyncio.sleep(12.0)
+        
+        vote_counts = {}
+        for voter, target in self.context['votes_cast'].items():
+            vote_counts[target] = vote_counts.get(target, 0) + 1
+            
+        if not vote_counts:
+            ejection_result = "No votes were counted. Nobody was ejected."
+        else:
+            max_votes = max(vote_counts.values())
+            winners = [t for t, c in vote_counts.items() if c == max_votes]
+            
+            if len(winners) > 1:
+                ejection_result = "The vote was tied. Nobody was ejected."
+            elif winners[0] == 15:
+                ejection_result = "The crew voted to skip. Nobody was ejected."
+            else:
+                ejected_id = winners[0]
+                is_imposter = self.bots[ejected_id]['role'] == "imposter"
+                role_Str = "an Imposter" if is_imposter else "not an Imposter"
+                ejection_result = f"Bot {ejected_id} was ejected. They were {role_Str}"
+                self.bots[ejected_id]['alive'] = False
+        
         self.game_phase = "roaming"
+        
+        for bot_id in self.context['eligible_voters']:
+            state = self.generate_snapshot(bot_id)
+            asyncio.create_task(
+                self.narrator.generate_action(
+                    bot_id=bot_id,
+                    state=state,
+                    event_type="meeting_ended",
+                    event_kwargs={"ejection_result": ejection_result}
+                )
+            )
+            
             
     async def _poll_round(self, timeout):
         expected_reponses = len(self.context["eligible_voters"])

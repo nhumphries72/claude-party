@@ -109,6 +109,13 @@ EVENTS = {
     Dead crewmates must still complete their tasks to win.
     </event>""",
     
+    "meeting_ended": """<event>\
+    The emergency meeting has concluded. You have been returned to the Cafeteria.
+    Result: {ejection_result}
+    
+    What is your next move?
+    </event>""",
+    
     "error": """<event>
     ERROR: {error_message}. Please rethink and output a valid <action> command.
     </event>"""
