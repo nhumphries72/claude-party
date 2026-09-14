@@ -3,6 +3,7 @@ import websockets
 import json
 import time
 import random
+import sys
 from navigator import Navigator
 from meeting_manager import MeetingManager
 from cli_functions import execute_command
@@ -19,7 +20,36 @@ with open("task_info.json", 'r') as task_info: TASK_INFO = json.load(task_info)
 bots, vents, bot_arrival_events, active_actions, MASTER_TASKS = {}, {}, {}, {}, {}
 cooldowns = { "kill": {}, "sabotage": {} }
 bot_memories = {i: deque(maxlen=5) for i in range(15)}
-manager = MeetingManager(active_connection, bots, active_actions, bot_arrival_events)
+
+async def evaluate_endgame(bots, active_actions, active_connection):
+    living_imposters = [b for b, info in bots.items() if info['alive'] and info['role'] == 'imposter']
+    living_crewmates = [b for b, info in bots.items() if info['alive'] and info['role'] != 'imposter']
+    all_crewmates = [b for b, info in bots.items() if info['role'] != 'imposter']
+    
+    tasks_remaining = sum(len(MASTER_TASKS[str(b)]) for b in all_crewmates)
+    crew_task_win = (tasks_remaining == 0)
+    crew_survival_win = len(living_imposters) == 0
+    imposter_win = len(living_imposters) >= len(living_crewmates)
+    
+    if crew_task_win or crew_survival_win or imposter_win:
+        print("\n" + "="*50)
+        if imposter_win:
+            print("Game Over: Imposters win.")
+        else:
+            print("Game Over: Crewmates win.")
+        print("="*50 + "\n")
+        
+        for task in active_actions.values():
+            task.cancel()
+        active_actions.clear()
+        
+        print("Severing websocket connection")
+        if active_connection: await active_connection.close()
+        
+        print("Shutting down moderator")
+        sys.exit(0)
+manager = MeetingManager(active_connection, bots, active_actions, bot_arrival_events, evaluate_endgame)
+
 command_queue = asyncio.Queue()
 narrator = Narrator(command_queue, manager)
 
@@ -58,6 +88,7 @@ async def handle_game_state(websocket):
             elif data.get('type') == "event":
                 event_context = {
                     "data": data,
+                    "active_connection": active_connection,
                     "bot_arrival_events": bot_arrival_events,
                     "active_actions": active_actions,
                     "cooldowns": cooldowns,
@@ -71,7 +102,8 @@ async def handle_game_state(websocket):
                     "meetings_remaining": meetings_remaining,
                     "generate_snapshot": generate_snapshot,
                     "bots": bots,
-                    "is_dead": is_dead
+                    "is_dead": is_dead,
+                    "evaluate_endgame": evaluate_endgame
                 }
                 handle_events(event_context)
                 

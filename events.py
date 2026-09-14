@@ -13,6 +13,7 @@ def _handle_arrived(bot_id, data, ctx):
     return None
 
 def _handle_kill_complete(bot_id, data, ctx):
+    asyncio.create_task(ctx['evaluate_endgame'](ctx['bots'], ctx['active_actions'], ctx['active_connection']))
     target_id = int(data.get('target_id'))
     print(f"Bot {target_id} was murdered by bot {bot_id}")
     
@@ -74,6 +75,7 @@ def _handle_sabotage(bot_id, data, ctx):
     return {}
     
 def _handle_task(bot_id, data, ctx):
+    asyncio.create_task(ctx['evaluate_endgame'](ctx['bots'], ctx['active_actions'], ctx['active_connection']))
     print(f"Bot {bot_id} completed {data.get('task_name')}")
     ctx['bot_memories'][bot_id].append(f"Finished task {data.get('task_name')}")
     return None

@@ -4,11 +4,12 @@ import time
 import websockets
 
 class MeetingManager:
-    def __init__(self, active_connection, bots, active_actions, bot_arrival_events):
+    def __init__(self, active_connection, bots, active_actions, bot_arrival_events, evaluate_endgame):
         self.connection = active_connection
         self.bots = bots
         self.active_actions = active_actions
         self.bot_arrival_events = bot_arrival_events
+        self.evaluate_endgame = evaluate_endgame
         self.known_dead = set()
         
         self.game_phase = "roaming"
@@ -16,6 +17,8 @@ class MeetingManager:
         self.context = {}
         
         self.response_queue = asyncio.Queue()
+        self.broadcast_queue = asyncio.Queue()
+        self.broadcast_task = None
         
     async def start_meeting(self, caller_id, victim_id, narrator, snapshot_func):
         if self.game_phase == "meeting": return
@@ -57,6 +60,7 @@ class MeetingManager:
         await self.run_lifecycle()
         
     async def run_lifecycle(self):
+        self.broadcast_task = asyncio.create_task(self._broadcast())
         
         await asyncio.sleep(2.5)
         
@@ -79,7 +83,7 @@ class MeetingManager:
                 except asyncio.QueueEmpty:
                     break
             
-            chat_log = "\n".join([f"Bot {b}: {msg}" for b, msg in self.context["chat_history"]])
+            chat_log = "\n".join([f"Bot {b}: {msg}" for b, msg in self.context["chat_history"][-20:]])
             if not chat_log: chat_log = "No messages yet."
             
             reason = f"Reported Bot {self.context['victim_id']}'s body." if self.context.get('victim_id') else "Emergency button pressed."
@@ -106,7 +110,12 @@ class MeetingManager:
                     )
                 )
             
-            state_changed = await self._poll_round(timeout=15.0)
+            state_changed, round_chats = await self._poll_round(timeout=15.0)
+            
+            await self.broadcast_queue.join()
+            
+            for item in round_chats:
+                self.broadcast_queue.put_nowait(item)
             
             if len(self.context["votes_cast"]) == len(self.context["eligible_voters"]):
                 print("All bots have voted. Concluding meeting.")
@@ -126,9 +135,13 @@ class MeetingManager:
                     break
                 
             round_num += 1
+            
+        await self.broadcast_queue.join()
+        if self.broadcast_task: self.broadcast_task.cancel()
         
         print("\nMeeting concluded.")
         
+        await asyncio.sleep(4.0)
         await self.connection.send(json.dumps({
             "type": "command",
             "action": "proceed"
@@ -158,6 +171,7 @@ class MeetingManager:
                 ejection_result = f"Bot {ejected_id} was ejected. They were {role_Str}"
                 self.bots[ejected_id]['alive'] = False
         
+        await self.evaluate_endgame(self.bots, self.active_actions, self.connection)
         self.game_phase = "roaming"
         
         for bot_id in self.context['eligible_voters']:
@@ -176,6 +190,7 @@ class MeetingManager:
         expected_reponses = len(self.context["eligible_voters"])
         responses_received = 0
         state_changed = False
+        round_chats = []
         
         start = time.time()
         while responses_received < expected_reponses:
@@ -189,19 +204,9 @@ class MeetingManager:
                 
                 if turn_data.get("chat"):
                     message = turn_data["chat"]
+                    round_chats.append((bot_id, message))
                     self.context["chat_history"].append((bot_id, message))
                     state_changed = True
-
-                    try:
-                        await self.connection.send(json.dumps({
-                            "type": "command",
-                            "action": "chat",
-                            "bot_id": bot_id,
-                            "message": message
-                        }))
-                    except websockets.exceptions.ConnectionClosed:
-                        print("Meeting interrupted: Unity disconnected")
-                        return False
                     
                 if turn_data.get("vote") and self.voting_open:
                     target = turn_data["vote"]
@@ -225,6 +230,26 @@ class MeetingManager:
             except asyncio.TimeoutError:
                 continue
             
-        return state_changed
+        return state_changed, round_chats
 
+    async def _broadcast(self):
+        while True:
+            try:
+                bot_id, msg = await self.broadcast_queue.get()
+                
+                await self.connection.send(json.dumps({
+                    "type": "command",
+                    "action": "chat",
+                    "bot_id": bot_id,
+                    "message": msg
+                }))
+                
+                await asyncio.sleep(2.0)
+                
+                self.broadcast_queue.task_done()
+                
+            except websockets.exceptions.ConnectionClosed:
+                break
+            except asyncio.CancelledError:
+                break
                 
